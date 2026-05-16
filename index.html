@@ -192,6 +192,75 @@
   .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
   .toast.error { background:#c0392b; }
 
+  /* ── AUTH SCREEN ── */
+  .auth-screen {
+    position:fixed; inset:0; z-index:1000;
+    background:var(--cream);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'DM Sans',sans-serif;
+  }
+  .auth-screen.hidden { display:none; }
+  .auth-box {
+    background:white; border-radius:24px; padding:40px;
+    width:400px; max-width:92vw;
+    box-shadow:0 8px 40px rgba(0,0,0,0.12);
+    border:1px solid var(--border);
+  }
+  .auth-logo {
+    font-family:'Playfair Display',serif; font-size:28px;
+    text-align:center; margin-bottom:6px;
+  }
+  .auth-logo span { color:var(--gold); }
+  .auth-tagline { text-align:center; font-size:13px; color:#888; margin-bottom:32px; }
+  .auth-tabs { display:flex; background:var(--cream); border-radius:10px; padding:4px; margin-bottom:24px; }
+  .auth-tab {
+    flex:1; padding:8px; text-align:center; border-radius:8px;
+    font-size:13px; font-weight:500; cursor:pointer; color:#888;
+    border:none; background:none; font-family:'DM Sans',sans-serif; transition:all 0.2s;
+  }
+  .auth-tab.active { background:white; color:var(--ink); box-shadow:0 1px 4px rgba(0,0,0,0.1); }
+  .auth-input {
+    width:100%; padding:11px 14px; border:1px solid var(--border);
+    border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px;
+    color:var(--ink); background:var(--cream); outline:none; margin-bottom:12px;
+    transition:border-color 0.2s;
+  }
+  .auth-input:focus { border-color:var(--rust); }
+  .auth-btn {
+    width:100%; padding:13px; background:var(--rust); color:white;
+    border:none; border-radius:12px; font-family:'DM Sans',sans-serif;
+    font-size:15px; font-weight:500; cursor:pointer; transition:background 0.2s;
+    margin-bottom:12px;
+  }
+  .auth-btn:hover { background:#A8441A; }
+  .auth-btn:disabled { background:#ccc; cursor:not-allowed; }
+  .auth-divider { display:flex; align-items:center; gap:12px; margin:4px 0 12px; color:#ccc; font-size:12px; }
+  .auth-divider::before, .auth-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+  .auth-google-btn {
+    width:100%; padding:11px; background:white; color:var(--ink);
+    border:1px solid var(--border); border-radius:12px; font-family:'DM Sans',sans-serif;
+    font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .auth-google-btn:hover { background:var(--cream); border-color:#aaa; }
+  .auth-error { font-size:13px; color:#c0392b; margin-bottom:10px; text-align:center; min-height:18px; }
+  .auth-success { font-size:13px; color:var(--sage); margin-bottom:10px; text-align:center; min-height:18px; }
+
+  /* User menu dropdown */
+  .user-menu-wrap { position:relative; }
+  .user-menu {
+    position:absolute; top:44px; right:0;
+    background:white; border:1px solid var(--border); border-radius:12px;
+    padding:6px; min-width:180px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.12); z-index:200;
+    display:none;
+  }
+  .user-menu.open { display:block; animation:fadeIn 0.15s ease; }
+  .user-menu-email { font-size:12px; color:#888; padding:8px 12px 6px; border-bottom:1px solid var(--border); margin-bottom:4px; word-break:break-all; }
+  .user-menu-item { padding:9px 12px; border-radius:8px; font-size:13px; cursor:pointer; color:var(--ink); }
+  .user-menu-item:hover { background:var(--cream); }
+  .user-menu-item.danger { color:#c0392b; }
+
   /* Google Autocomplete dropdown styling */
   .pac-container { border-radius:10px; border:1px solid var(--border); box-shadow:0 4px 16px rgba(0,0,0,0.12); font-family:'DM Sans',sans-serif; margin-top:4px; }
   .pac-item { padding:8px 14px; font-size:13px; cursor:pointer; }
@@ -202,6 +271,29 @@
 </head>
 <body>
 
+<!-- AUTH SCREEN -->
+<div class="auth-screen" id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">🍴 Mapp<span>etite</span></div>
+    <div class="auth-tagline">Your personal restaurant journal on a map</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign in</button>
+      <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Create account</button>
+    </div>
+    <div class="auth-error" id="auth-error"></div>
+    <input type="email" class="auth-input" id="auth-email" placeholder="Your email address" onkeydown="if(event.key==='Enter')submitAuth()">
+    <input type="password" class="auth-input" id="auth-password" placeholder="Password" onkeydown="if(event.key==='Enter')submitAuth()">
+    <input type="password" class="auth-input" id="auth-password2" placeholder="Confirm password" style="display:none" onkeydown="if(event.key==='Enter')submitAuth()">
+    <button class="auth-btn" id="auth-submit-btn" onclick="submitAuth()">Sign in</button>
+    <div class="auth-divider">or</div>
+    <button class="auth-google-btn" onclick="signInWithGoogle()">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-3.59-13.46-8.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+      Continue with Google
+    </button>
+    <div class="auth-success" id="auth-success"></div>
+  </div>
+</div>
+
 <nav>
   <div class="logo">🍴 Mapp<span>etite</span></div>
   <div class="nav-tabs">
@@ -210,7 +302,13 @@
     <button class="nav-tab" onclick="showView('stats')">📊 Stats</button>
   </div>
   <div style="display:flex;align-items:center;gap:12px">
-    <div class="avatar">AL</div>
+    <div class="user-menu-wrap">
+      <div class="avatar" id="user-avatar" onclick="toggleUserMenu()" style="cursor:pointer">?</div>
+      <div class="user-menu" id="user-menu">
+        <div class="user-menu-email" id="user-menu-email"></div>
+        <div class="user-menu-item danger" onclick="signOut()">🚪 Sign out</div>
+      </div>
+    </div>
   </div>
 </nav>
 
@@ -387,7 +485,181 @@
 const SUPABASE_URL = 'https://zhtnyacrxcweklmmfwas.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpodG55YWNyeGN3ZWtsbW1md2FzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3ODE3NjQsImV4cCI6MjA5NDM1Nzc2NH0.FXMwpZKNBrXup-vcPAGDe6JJGfdq3iXyEzvNvMgaAEI';
 const API = `${SUPABASE_URL}/rest/v1/restaurants`;
-const HEADERS = { 'Content-Type':'application/json', 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${SUPABASE_KEY}`, 'Prefer':'return=representation' };
+
+let currentUser = null;
+let authToken = null;
+
+function getHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${authToken || SUPABASE_KEY}`,
+    'Prefer': 'return=representation'
+  };
+}
+
+// ── AUTH ──
+let authMode = 'login';
+
+function switchAuthTab(mode) {
+  authMode = mode;
+  document.getElementById('tab-login').classList.toggle('active', mode==='login');
+  document.getElementById('tab-signup').classList.toggle('active', mode==='signup');
+  document.getElementById('auth-submit-btn').textContent = mode==='login' ? 'Sign in' : 'Create account';
+  document.getElementById('auth-password2').style.display = mode==='signup' ? 'block' : 'none';
+  document.getElementById('auth-error').textContent = '';
+  document.getElementById('auth-success').textContent = '';
+}
+
+async function submitAuth() {
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const password2 = document.getElementById('auth-password2').value;
+  const errEl = document.getElementById('auth-error');
+  const successEl = document.getElementById('auth-success');
+  const btn = document.getElementById('auth-submit-btn');
+
+  errEl.textContent = ''; successEl.textContent = '';
+  if(!email || !password) { errEl.textContent = 'Please fill in all fields.'; return; }
+  if(authMode==='signup' && password !== password2) { errEl.textContent = 'Passwords do not match.'; return; }
+  if(password.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = authMode==='login' ? 'Signing in...' : 'Creating account...';
+
+  const endpoint = authMode==='login'
+    ? `${SUPABASE_URL}/auth/v1/token?grant_type=password`
+    : `${SUPABASE_URL}/auth/v1/signup`;
+
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_KEY },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+
+    if(!res.ok) {
+      errEl.textContent = data.error_description || data.msg || 'Something went wrong.';
+      btn.disabled=false; btn.textContent = authMode==='login'?'Sign in':'Create account';
+      return;
+    }
+
+    if(authMode==='signup' && !data.access_token) {
+      // Email confirmation required
+      successEl.textContent = '✅ Check your email to confirm your account, then sign in!';
+      btn.disabled=false; btn.textContent='Create account';
+      return;
+    }
+
+    onSignedIn(data);
+  } catch(e) {
+    errEl.textContent = 'Connection error — please try again.';
+    btn.disabled=false; btn.textContent = authMode==='login'?'Sign in':'Create account';
+  }
+}
+
+async function signInWithGoogle() {
+  // Redirect to Google OAuth via Supabase
+  window.location.href = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.href)}`;
+}
+
+async function signOut() {
+  try {
+    await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+      method:'POST',
+      headers:{ 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${authToken}` }
+    });
+  } catch(e) {}
+  currentUser = null; authToken = null;
+  localStorage.removeItem('mappetite_session');
+  toggleUserMenu(false);
+  showAuthScreen();
+}
+
+function onSignedIn(session) {
+  currentUser = session.user;
+  authToken = session.access_token;
+  // Persist session
+  localStorage.setItem('mappetite_session', JSON.stringify({ access_token: session.access_token, user: session.user }));
+  showApp();
+}
+
+function showAuthScreen() {
+  document.getElementById('auth-screen').classList.remove('hidden');
+  document.getElementById('auth-email').value='';
+  document.getElementById('auth-password').value='';
+  document.getElementById('auth-password2').value='';
+  document.getElementById('auth-error').textContent='';
+  document.getElementById('auth-success').textContent='';
+  document.getElementById('auth-submit-btn').disabled=false;
+  document.getElementById('auth-submit-btn').textContent='Sign in';
+  switchAuthTab('login');
+}
+
+function showApp() {
+  document.getElementById('auth-screen').classList.add('hidden');
+  // Set avatar initials
+  const email = currentUser?.email || '';
+  const initials = email.substring(0,2).toUpperCase();
+  document.getElementById('user-avatar').textContent = initials;
+  document.getElementById('user-menu-email').textContent = email;
+  // Load data if map is ready, otherwise wait
+  if(map) { loadMyLogs(); }
+}
+
+function toggleUserMenu(force) {
+  const menu = document.getElementById('user-menu');
+  const open = force !== undefined ? force : !menu.classList.contains('open');
+  menu.classList.toggle('open', open);
+}
+
+// Close user menu when clicking outside
+document.addEventListener('click', e => {
+  if(!e.target.closest('.user-menu-wrap')) toggleUserMenu(false);
+});
+
+// ── SESSION CHECK ON LOAD ──
+async function checkSession() {
+  // Check for OAuth redirect (Google login)
+  const hash = window.location.hash;
+  if(hash && hash.includes('access_token')) {
+    const params = new URLSearchParams(hash.substring(1));
+    const access_token = params.get('access_token');
+    if(access_token) {
+      // Get user info
+      try {
+        const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+          headers:{ 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${access_token}` }
+        });
+        const user = await res.json();
+        window.history.replaceState(null, '', window.location.pathname);
+        onSignedIn({ access_token, user });
+        return;
+      } catch(e) {}
+    }
+  }
+
+  // Check localStorage for existing session
+  const stored = localStorage.getItem('mappetite_session');
+  if(stored) {
+    try {
+      const session = JSON.parse(stored);
+      // Verify token is still valid
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+        headers:{ 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${session.access_token}` }
+      });
+      if(res.ok) {
+        onSignedIn(session);
+        return;
+      }
+    } catch(e) {}
+    localStorage.removeItem('mappetite_session');
+  }
+
+  // No valid session — show auth screen
+  showAuthScreen();
+}
 
 // ── STATE ──
 let myLogs = [];         // restaurants I've logged (from Supabase)
@@ -405,8 +677,9 @@ let uploadedPhotos = [], currentRating = 'loved', starVal = 0;
 
 // ── SUPABASE HELPERS ──
 async function loadMyLogs() {
+  if(!currentUser) return;
   try {
-    const res = await fetch(`${API}?order=created_at.desc`, { headers: HEADERS });
+    const res = await fetch(`${API}?user_id=eq.${currentUser.id}&order=created_at.desc`, { headers: getHeaders() });
     if(!res.ok) throw new Error();
     myLogs = (await res.json()).map(r=>({...r, photos:r.photos||[]}));
     renderSidebar();
@@ -419,13 +692,13 @@ async function loadMyLogs() {
 }
 
 async function saveLog(entry) {
-  const res = await fetch(API, { method:'POST', headers:HEADERS, body:JSON.stringify(entry) });
+  const res = await fetch(API, { method:'POST', headers:getHeaders(), body:JSON.stringify({...entry, user_id: currentUser.id}) });
   if(!res.ok) throw new Error('Save failed');
   return (await res.json())[0];
 }
 
 async function updateLog(id, entry) {
-  const res = await fetch(`${API}?id=eq.${id}`, { method:'PATCH', headers:HEADERS, body:JSON.stringify(entry) });
+  const res = await fetch(`${API}?id=eq.${id}&user_id=eq.${currentUser.id}`, { method:'PATCH', headers:getHeaders(), body:JSON.stringify(entry) });
   if(!res.ok) throw new Error('Update failed');
   return (await res.json())[0];
 }
@@ -455,9 +728,6 @@ function initMap() {
   // Auto-locate user
   goToMyLocation();
 
-  // Load logged places from DB
-  loadMyLogs();
-
   // Search nearby when map stops moving
   let idleTimer;
   map.addListener('idle', ()=>{
@@ -467,6 +737,9 @@ function initMap() {
 
   // Close panel when clicking map background
   map.addListener('click', ()=>closePanel());
+
+  // If auth already confirmed before map loaded, load data now
+  if(currentUser) loadMyLogs();
 }
 
 // ── GEOLOCATION ──
@@ -692,7 +965,7 @@ async function quickWishlist() {
     lng: typeof loc.lng==='function' ? loc.lng() : loc.lng
   };
   try {
-    const res = await fetch(API, { method:'POST', headers:HEADERS, body:JSON.stringify(entry) });
+    const res = await fetch(API, { method:'POST', headers:getHeaders(), body:JSON.stringify({...entry, user_id: currentUser.id}) });
     if(!res.ok) throw new Error(await res.text());
     const saved = (await res.json())[0];
     myLogs.unshift(saved);
@@ -791,9 +1064,9 @@ async function submitLog() {
     const existing = myLogs.find(l => l.place_id && l.place_id === place.place_id);
     if(existing) {
       // Update existing log
-      const res = await fetch(`${API}?id=eq.${existing.id}`, {
+      const res = await fetch(`${API}?id=eq.${existing.id}&user_id=eq.${currentUser.id}`, {
         method: 'PATCH',
-        headers: { ...HEADERS, 'Prefer': 'return=representation' },
+        headers: getHeaders(),
         body: JSON.stringify(entry)
       });
       if(!res.ok) throw new Error(await res.text());
@@ -802,8 +1075,8 @@ async function submitLog() {
       // Save new log
       const res = await fetch(API, {
         method: 'POST',
-        headers: HEADERS,
-        body: JSON.stringify(entry)
+        headers: getHeaders(),
+        body: JSON.stringify({...entry, user_id: currentUser.id})
       });
       if(!res.ok) throw new Error(await res.text());
       const saved = (await res.json())[0];
@@ -987,6 +1260,9 @@ function showToast(msg,isError=false){
 }
 
 document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+// Start the app — check if user is already logged in
+checkSession();
 </script>
 
 <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
