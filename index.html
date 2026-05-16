@@ -261,6 +261,37 @@
   .user-menu-item:hover { background:var(--cream); }
   .user-menu-item.danger { color:#c0392b; }
 
+  /* Unified star rating */
+  .star-rating-block { background:var(--cream); border-radius:14px; padding:18px; text-align:center; border:1px solid var(--border); }
+  .star-row-big { display:flex; justify-content:center; gap:8px; margin-bottom:8px; }
+  .star-big { font-size:36px; cursor:pointer; color:#ddd; background:none; border:none; transition:color 0.1s, transform 0.1s; line-height:1; padding:0 2px; }
+  .star-big.filled { color:var(--gold); }
+  .star-big:hover { transform:scale(1.15); }
+  .star-label { font-size:14px; font-weight:500; color:#888; min-height:20px; margin-bottom:10px; transition:all 0.2s; }
+  .star-label.loved { color:#27AE60; }
+  .star-label.liked { color:#E67E22; }
+  .star-label.meh { color:#888; }
+  .star-badges { display:flex; justify-content:center; }
+  .star-badge { font-size:12px; color:#aaa; cursor:pointer; padding:5px 12px; border-radius:20px; border:1px solid var(--border); background:white; transition:all 0.15s; }
+  .star-badge:hover { border-color:var(--rust); color:var(--rust); }
+  .star-badge.wishlist-active { background:rgba(232,98,10,0.08); border-color:#E8620A; color:#E8620A; font-weight:500; }
+
+  /* User location dot */
+  .user-location-dot {
+    width:18px; height:18px; position:relative;
+  }
+  .user-location-dot::before {
+    content:''; position:absolute; inset:-6px;
+    background:rgba(66,133,244,0.15); border-radius:50%;
+    animation:pulse 2s ease-out infinite;
+  }
+  @keyframes pulse { 0%{transform:scale(0.8);opacity:1} 100%{transform:scale(2);opacity:0} }
+
+  /* Cuisine cards */
+  .cuisine-grid { display:flex; flex-wrap:wrap; gap:8px; }
+  .cuisine-tag { padding:6px 14px; border-radius:20px; font-size:13px; font-weight:500; background:var(--cream); border:1px solid var(--border); color:var(--ink); display:flex; align-items:center; gap:6px; }
+  .cuisine-tag .cuisine-count { background:var(--rust); color:white; border-radius:10px; padding:1px 7px; font-size:11px; }
+
   /* Google Autocomplete dropdown styling */
   .pac-container { border-radius:10px; border:1px solid var(--border); box-shadow:0 4px 16px rgba(0,0,0,0.12); font-family:'DM Sans',sans-serif; margin-top:4px; }
   .pac-item { padding:8px 14px; font-size:13px; cursor:pointer; }
@@ -382,7 +413,6 @@
       <div class="filter-chip" onclick="filterJournal(this,'loved')">❤️ Loved</div>
       <div class="filter-chip" onclick="filterJournal(this,'liked')">👍 Good</div>
       <div class="filter-chip" onclick="filterJournal(this,'meh')">😐 Meh</div>
-      <div class="filter-chip" onclick="filterJournal(this,'wishlist')">📌 Wishlist</div>
     </div>
     <div id="journal-entries" style="display:grid;gap:14px;"></div>
   </div>
@@ -403,7 +433,7 @@
       <div class="wishlist-num" id="s-wishlist">0</div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
-      <div class="chart-card"><div class="chart-title">Top Cuisines</div><div id="cuisine-bars"></div></div>
+      <div class="chart-card"><div class="chart-title">Top Cuisines</div><div id="cuisine-bars" class="cuisine-grid"></div></div>
       <div class="chart-card">
         <div class="chart-title">Ratings breakdown</div>
         <div class="bar-row"><div class="bar-label">❤️ Loved</div><div class="bar-track"><div class="bar-fill sage" id="bar-loved" style="width:0%"></div></div><div class="bar-count" id="count-loved">0</div></div>
@@ -427,22 +457,19 @@
     </div>
     <div class="modal-body">
       <div class="form-group">
-        <label class="form-label">Status</label>
-        <div class="rating-group">
-          <div class="rating-option loved selected loved" id="opt-loved" onclick="selectRating('loved')">❤️ Loved</div>
-          <div class="rating-option liked" id="opt-liked" onclick="selectRating('liked')">👍 Good</div>
-          <div class="rating-option meh" id="opt-meh" onclick="selectRating('meh')">😐 Meh</div>
-          <div class="rating-option wishlist" id="opt-wishlist" onclick="selectRating('wishlist')">📌 Wishlist</div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Your rating</label>
-        <div class="star-row">
-          <button class="star-btn" onclick="setStar(1)">★</button>
-          <button class="star-btn" onclick="setStar(2)">★</button>
-          <button class="star-btn" onclick="setStar(3)">★</button>
-          <button class="star-btn" onclick="setStar(4)">★</button>
-          <button class="star-btn" onclick="setStar(5)">★</button>
+        <label class="form-label">How was it?</label>
+        <div class="star-rating-block">
+          <div class="star-row-big">
+            <button class="star-big" data-val="1" onclick="setStar(1)">★</button>
+            <button class="star-big" data-val="2" onclick="setStar(2)">★</button>
+            <button class="star-big" data-val="3" onclick="setStar(3)">★</button>
+            <button class="star-big" data-val="4" onclick="setStar(4)">★</button>
+            <button class="star-big" data-val="5" onclick="setStar(5)">★</button>
+          </div>
+          <div class="star-label" id="star-label">Tap a star to rate</div>
+          <div class="star-badges">
+            <div class="star-badge" id="badge-wishlist" onclick="setWishlist()">📌 Save to wishlist instead</div>
+          </div>
         </div>
       </div>
       <div class="form-group">
@@ -546,7 +573,6 @@ async function submitAuth() {
     }
 
     if(authMode==='signup' && !data.access_token) {
-      // Email confirmation required
       successEl.textContent = '✅ Check your email to confirm your account, then sign in!';
       btn.disabled=false; btn.textContent='Create account';
       return;
@@ -560,7 +586,6 @@ async function submitAuth() {
 }
 
 async function signInWithGoogle() {
-  // Redirect to Google OAuth via Supabase
   window.location.href = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.href)}`;
 }
 
@@ -580,7 +605,6 @@ async function signOut() {
 function onSignedIn(session) {
   currentUser = session.user;
   authToken = session.access_token;
-  // Persist session
   localStorage.setItem('mappetite_session', JSON.stringify({ access_token: session.access_token, user: session.user }));
   showApp();
 }
@@ -599,12 +623,10 @@ function showAuthScreen() {
 
 function showApp() {
   document.getElementById('auth-screen').classList.add('hidden');
-  // Set avatar initials
   const email = currentUser?.email || '';
   const initials = email.substring(0,2).toUpperCase();
   document.getElementById('user-avatar').textContent = initials;
   document.getElementById('user-menu-email').textContent = email;
-  // Load data if map is ready, otherwise wait
   if(map) { loadMyLogs(); }
 }
 
@@ -614,20 +636,16 @@ function toggleUserMenu(force) {
   menu.classList.toggle('open', open);
 }
 
-// Close user menu when clicking outside
 document.addEventListener('click', e => {
   if(!e.target.closest('.user-menu-wrap')) toggleUserMenu(false);
 });
 
-// ── SESSION CHECK ON LOAD ──
 async function checkSession() {
-  // Check for OAuth redirect (Google login)
   const hash = window.location.hash;
   if(hash && hash.includes('access_token')) {
     const params = new URLSearchParams(hash.substring(1));
     const access_token = params.get('access_token');
     if(access_token) {
-      // Get user info
       try {
         const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
           headers:{ 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${access_token}` }
@@ -640,12 +658,10 @@ async function checkSession() {
     }
   }
 
-  // Check localStorage for existing session
   const stored = localStorage.getItem('mappetite_session');
   if(stored) {
     try {
       const session = JSON.parse(stored);
-      // Verify token is still valid
       const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
         headers:{ 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${session.access_token}` }
       });
@@ -657,16 +673,16 @@ async function checkSession() {
     localStorage.removeItem('mappetite_session');
   }
 
-  // No valid session — show auth screen
   showAuthScreen();
 }
 
 // ── STATE ──
-let myLogs = [];         // restaurants I've logged (from Supabase)
+let myLogs = [];
 let map, placesService, infoWindow, clusterer;
-let myLogMarkers = [];   // colored markers for logged places
-let nearbyMarkers = [];  // grey markers for nearby restaurants from Google
-let selectedPlace = null; // currently selected Google Place
+let myLogMarkers = [];
+let nearbyMarkers = [];
+let selectedPlace = null;
+let locationMarker = null;
 
 const statusColors = { loved:'#2ECC71', liked:'#F39C12', meh:'#999999', wishlist:'#E8620A' };
 const statusEmoji  = { loved:'❤️', liked:'👍', meh:'😐', wishlist:'📌' };
@@ -674,6 +690,11 @@ const statusLabel  = { loved:'LOVED IT', liked:'GOOD', meh:'MEH', wishlist:'WISH
 const statusColorV = { loved:'#27AE60', liked:'#E67E22', meh:'#aaa', wishlist:'#E8620A' };
 
 let uploadedPhotos = [], currentRating = 'loved', starVal = 0;
+
+// Star → status mapping
+const starToStatus = { 1:'meh', 2:'meh', 3:'liked', 4:'liked', 5:'loved' };
+const starToLabel  = { 1:'😐 Not great', 2:'😐 It was okay', 3:'👍 Pretty good', 4:'👍 Really good', 5:'❤️ Loved it!' };
+const starToColor  = { 1:'meh', 2:'meh', 3:'liked', 4:'liked', 5:'loved' };
 
 // ── SUPABASE HELPERS ──
 async function loadMyLogs() {
@@ -722,23 +743,17 @@ function initMap() {
   placesService = new google.maps.places.PlacesService(map);
   infoWindow = new google.maps.InfoWindow();
 
-  // Init search autocomplete
   initAutocomplete();
-
-  // Auto-locate user
   goToMyLocation();
 
-  // Search nearby when map stops moving
   let idleTimer;
   map.addListener('idle', ()=>{
     clearTimeout(idleTimer);
     idleTimer = setTimeout(()=>searchNearbyRestaurants(), 600);
   });
 
-  // Close panel when clicking map background
   map.addListener('click', ()=>closePanel());
 
-  // If auth already confirmed before map loaded, load data now
   if(currentUser) loadMyLogs();
 }
 
@@ -750,12 +765,33 @@ function goToMyLocation() {
       const loc = {lat:pos.coords.latitude, lng:pos.coords.longitude};
       map.setCenter(loc);
       map.setZoom(15);
+      placeLocationDot(loc);
     },
-    () => showToast('📍 Could not get your location — showing default area', true)
+    () => showToast('📍 Could not get your location', true)
   );
 }
 
-// ── PLACES AUTOCOMPLETE (search bar) ──
+function placeLocationDot(loc) {
+  if(locationMarker) locationMarker.setMap(null);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" fill="rgba(66,133,244,0.2)" stroke="none"/>
+    <circle cx="12" cy="12" r="6" fill="#4285F4" stroke="white" stroke-width="2.5"/>
+  </svg>`;
+  locationMarker = new google.maps.Marker({
+    position: loc, map,
+    icon:{ url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg), scaledSize:new google.maps.Size(24,24), anchor:new google.maps.Point(12,12) },
+    title:'You are here', zIndex:20,
+    optimized:false
+  });
+  if(navigator.geolocation) {
+    navigator.geolocation.watchPosition(p => {
+      const l = {lat:p.coords.latitude, lng:p.coords.longitude};
+      if(locationMarker) locationMarker.setPosition(l);
+    }, null, {enableHighAccuracy:true, maximumAge:10000});
+  }
+}
+
+// ── PLACES AUTOCOMPLETE ──
 function initAutocomplete() {
   const input = document.getElementById('city-search');
   const autocomplete = new google.maps.places.Autocomplete(input, {
@@ -774,15 +810,13 @@ function initAutocomplete() {
       map.setCenter(place.geometry.location);
       map.setZoom(15);
     }
-    // If it's a restaurant/food place, open its panel directly
     if(place.types&&(place.types.includes('restaurant')||place.types.includes('food'))) {
       openPlacePanel(place, null);
     }
   });
 }
 
-// ── NEARBY RESTAURANTS (Google Places) ──
-// Excluded types — we only want proper sit-down restaurants
+// ── NEARBY RESTAURANTS ──
 const EXCLUDED_TYPES = new Set([
   'meal_takeaway','meal_delivery','fast_food','bakery',
   'cafe','bar','night_club','liquor_store','convenience_store',
@@ -800,7 +834,6 @@ function searchNearbyRestaurants() {
 
   const radius = zoom >= 15 ? 800 : zoom >= 13 ? 2000 : 4000;
 
-  // Use keyword 'restaurant' + type 'restaurant' for best filtering
   placesService.nearbySearch({
     location: center,
     radius,
@@ -809,15 +842,11 @@ function searchNearbyRestaurants() {
   }, (results, status) => {
     if(status !== google.maps.places.PlacesServiceStatus.OK || !results) return;
     results.forEach(place => {
-      // Skip if already logged
       if(myLogs.find(l=>l.place_id===place.place_id)) return;
-      // Skip if primary type is excluded (e.g. bakery, fast food)
       const types = place.types || [];
       const isExcluded = types.some(t => EXCLUDED_TYPES.has(t));
-      // Only skip if ALL types are excluded (some places have both 'restaurant' and 'cafe')
       const hasRestaurant = types.includes('restaurant');
       if(isExcluded && !hasRestaurant) return;
-      // Skip obvious fast food chains by name
       const fastFoodNames = /\b(mcdonalds|mcdonald's|burger king|kfc|quick|subway|domino|pizza hut|taco bell|wendy|five guys|pita pit|exki|lunch garden)\b/i;
       if(fastFoodNames.test(place.name)) return;
       addNearbyMarker(place);
@@ -840,7 +869,7 @@ function addNearbyMarker(place) {
   nearbyMarkers.push(marker);
 }
 
-// ── MY LOG MARKERS (colored pins) ──
+// ── MY LOG MARKERS ──
 function renderMyLogMarkers() {
   if(clusterer) clusterer.clearMarkers();
   myLogMarkers.forEach(m=>m.setMap(null));
@@ -862,7 +891,6 @@ function renderMyLogMarkers() {
     myLogMarkers.push(marker);
   });
 
-  // Cluster my logged markers
   clusterer = new markerClusterer.MarkerClusterer({
     map, markers: myLogMarkers,
     renderer:{
@@ -885,7 +913,6 @@ function renderMyLogMarkers() {
 // ── PLACE PANEL ──
 function openPlacePanel(place, marker) {
   selectedPlace = place;
-  // Check if already logged
   const logged = myLogs.find(l=>l.place_id===place.place_id);
 
   document.getElementById('panel-name').textContent = place.name;
@@ -907,10 +934,8 @@ function openPlacePanel(place, marker) {
     const stars = logged.rating?'★'.repeat(logged.rating)+'☆'.repeat(5-logged.rating):'';
     loggedEl.innerHTML = `<div class="panel-logged-title">Your log ${statusEmoji[logged.status]} ${statusLabel[logged.status]}</div>
       <div class="panel-logged-content">
-        ${stars?`<span style="color:var(--gold)">${stars}</span> &nbsp;`:''}
-        ${logged.notes?`"${logged.notes}"`:'' }
-        ${logged.date?`<div style="font-size:11px;color:#aaa;margin-top:4px;">📅 ${fmtDate(logged.date)}</div>`:''}
-      </div>`;
+        ${stars?`<span style="color:var(--gold)">${stars}</span> &nbsp;`:''} ${logged.notes?`"${logged.notes}"`:'' }
+        ${logged.date?`<div style="font-size:11px;color:#aaa;margin-top:4px;">📅 ${fmtDate(logged.date)}</div>`:''}</div>`;
     logBtn.textContent = '✏️ Edit my log';
     wlBtn.style.display='none';
   } else {
@@ -921,7 +946,6 @@ function openPlacePanel(place, marker) {
 
   document.getElementById('place-panel').classList.add('open');
 
-  // Highlight sidebar card if logged
   document.querySelectorAll('.restaurant-card').forEach(c=>c.classList.remove('selected'));
   if(logged) {
     const card = document.querySelector(`[data-id="${logged.id}"]`);
@@ -930,7 +954,6 @@ function openPlacePanel(place, marker) {
 }
 
 function openLoggedPanel(r, marker) {
-  // Build a fake "place" object from logged data so the panel works
   const fakePlace = {
     place_id: r.place_id,
     name: r.name,
@@ -948,7 +971,7 @@ function closePanel() {
 
 async function quickWishlist() {
   if(!selectedPlace) return;
-  const place = selectedPlace; // capture before any state changes
+  const place = selectedPlace;
   const loc = place.geometry.location;
   const entry = {
     place_id: place.place_id || null,
@@ -991,25 +1014,24 @@ function openLogModal() {
   document.getElementById('f-notes').value='';
   document.getElementById('f-date').value='';
   document.getElementById('f-cuisine').value='';
+  document.querySelectorAll('.star-big').forEach(s=>s.classList.remove('filled'));
+  document.getElementById('star-label').textContent='Tap a star to rate';
+  document.getElementById('star-label').className='star-label';
+  document.getElementById('badge-wishlist').classList.remove('wishlist-active');
 
-  // Try to auto-detect cuisine from Google place types
   const skipTypes = new Set(['restaurant','food','point_of_interest','establishment','premise','subpremise','locality','political']);
   const rawTypes = selectedPlace.types || [];
   const cuisineType = rawTypes.find(t=>!skipTypes.has(t));
   if(cuisineType) document.getElementById('f-cuisine').value = cuisineType.replace(/_/g,' ');
-  document.querySelectorAll('.rating-option').forEach(o=>o.classList.remove('selected','loved','liked','meh','wishlist'));
-  document.getElementById('opt-loved').classList.add('selected','loved');
-  document.querySelectorAll('.star-btn').forEach(s=>s.classList.remove('filled'));
   document.getElementById('photo-previews').innerHTML='';
-  document.getElementById('f-cuisine').value='';
   document.getElementById('submit-btn').disabled=false;
   document.getElementById('submit-btn').textContent='Save to my journal ✓';
 
-  // Pre-fill if editing existing log
   const existing = myLogs.find(l=>l.place_id===selectedPlace.place_id);
   if(existing) {
     selectRating(existing.status);
     if(existing.rating) setStar(existing.rating);
+    else if(existing.status==='wishlist') setWishlist();
     document.getElementById('f-notes').value=existing.notes||'';
     document.getElementById('f-date').value=existing.date||'';
     if(existing.cuisine) document.getElementById('f-cuisine').value=existing.cuisine;
@@ -1017,19 +1039,40 @@ function openLogModal() {
 
   document.getElementById('modal').classList.add('open');
 }
+
 function closeModal(){ document.getElementById('modal').classList.remove('open'); }
 
-function selectRating(type){
-  currentRating=type;
-  document.querySelectorAll('.rating-option').forEach(o=>o.classList.remove('selected','loved','liked','meh','wishlist'));
-  document.getElementById('opt-'+type).classList.add('selected',type);
+function setStar(n) {
+  starVal = n;
+  currentRating = starToStatus[n];
+  document.querySelectorAll('.star-big').forEach((s,i) => s.classList.toggle('filled', i < n));
+  const label = document.getElementById('star-label');
+  label.textContent = starToLabel[n];
+  label.className = 'star-label ' + starToColor[n];
+  document.getElementById('badge-wishlist').classList.remove('wishlist-active');
 }
-function setStar(n){ starVal=n; document.querySelectorAll('.star-btn').forEach((s,i)=>s.classList.toggle('filled',i<n)); }
+
+function setWishlist() {
+  starVal = 0;
+  currentRating = 'wishlist';
+  document.querySelectorAll('.star-big').forEach(s => s.classList.remove('filled'));
+  const label = document.getElementById('star-label');
+  label.textContent = '📌 Saving to wishlist';
+  label.className = 'star-label';
+  document.getElementById('badge-wishlist').classList.add('wishlist-active');
+}
+
+function selectRating(type) {
+  currentRating = type;
+  if(type === 'loved') setStar(5);
+  else if(type === 'liked') setStar(3);
+  else if(type === 'meh') setStar(1);
+  else if(type === 'wishlist') setWishlist();
+}
 
 async function submitLog() {
   if(!selectedPlace) { showToast('⚠️ No restaurant selected', true); return; }
 
-  // Capture everything we need NOW before any async calls or state changes
   const place = selectedPlace;
   const btn = document.getElementById('submit-btn');
   btn.disabled=true; btn.textContent='Saving...';
@@ -1038,12 +1081,10 @@ async function submitLog() {
   const lat = typeof loc.lat==='function' ? loc.lat() : loc.lat;
   const lng = typeof loc.lng==='function' ? loc.lng() : loc.lng;
 
-  // Clean up cuisine label
   const rawTypes = place.types || [];
   const skipTypes = new Set(['restaurant','food','point_of_interest','establishment','premise','subpremise','locality','political']);
   const cuisineType = rawTypes.find(t=>!skipTypes.has(t));
   const autoDetected = cuisineType ? cuisineType.replace(/_/g,' ') : '';
-  // User input takes priority, fall back to auto-detected, then generic
   const cuisine = (document.getElementById('f-cuisine').value.trim()) || autoDetected || 'Restaurant';
 
   const entry = {
@@ -1063,7 +1104,6 @@ async function submitLog() {
   try {
     const existing = myLogs.find(l => l.place_id && l.place_id === place.place_id);
     if(existing) {
-      // Update existing log
       const res = await fetch(`${API}?id=eq.${existing.id}&user_id=eq.${currentUser.id}`, {
         method: 'PATCH',
         headers: getHeaders(),
@@ -1072,7 +1112,6 @@ async function submitLog() {
       if(!res.ok) throw new Error(await res.text());
       myLogs = myLogs.map(l => l.id===existing.id ? {...l, ...entry} : l);
     } else {
-      // Save new log
       const res = await fetch(API, {
         method: 'POST',
         headers: getHeaders(),
@@ -1081,7 +1120,6 @@ async function submitLog() {
       if(!res.ok) throw new Error(await res.text());
       const saved = (await res.json())[0];
       myLogs.unshift(saved);
-      // Remove grey dot for this place
       nearbyMarkers = nearbyMarkers.filter(m => {
         if(m.getTitle() === place.name) { m.setMap(null); return false; }
         return true;
@@ -1127,8 +1165,7 @@ function cardHTML(r) {
     <div class="status-dot ${r.status}"></div>
     <div class="card-top"><div class="card-name">${r.name}</div><div class="card-rating">${stars}</div></div>
     <div class="card-meta">${r.city||''}${r.country?', '+r.country:''}</div>
-    ${r.notes?`<div class="card-note">"${r.notes}"</div>`:''}
-  </div>`;
+    ${r.notes?`<div class="card-note">"${r.notes}"</div>`:''}</div>`;
 }
 
 function focusLog(id) {
@@ -1148,6 +1185,7 @@ function searchCards(v) {
     c.style.display=c.querySelector('.card-name').textContent.toLowerCase().includes(q)?'':'none';
   });
 }
+
 function filterCards(chip,type) {
   document.querySelectorAll('.sidebar-header .filter-chip').forEach(c=>c.classList.remove('active'));
   chip.classList.add('active');
@@ -1158,14 +1196,14 @@ function filterCards(chip,type) {
 
 // ── JOURNAL ──
 function renderJournal() {
-  const visited=myLogs.filter(r=>r.status!=='wishlist');
+  const visited = myLogs.filter(r=>r.status!=='wishlist');
   document.getElementById('journal-subtitle').textContent=
     `${visited.length} restaurant${visited.length!==1?'s':''} logged across ${uniqueCities()} cit${uniqueCities()===1?'y':'ies'}`;
-  if(!myLogs.length){
-    document.getElementById('journal-entries').innerHTML=`<div class="empty-state"><div class="empty-icon">📓</div><p>Your journal is empty.<br>Tap restaurants on the map to get started!</p></div>`;
+  if(!visited.length){
+    document.getElementById('journal-entries').innerHTML=`<div class="empty-state"><div class="empty-icon">📓</div><p>Your journal is empty.<br>Visit restaurants and log them on the map!</p></div>`;
     return;
   }
-  document.getElementById('journal-entries').innerHTML=myLogs.map(r=>{
+  document.getElementById('journal-entries').innerHTML=visited.map(r=>{
     const stars=r.rating?'★'.repeat(r.rating)+'☆'.repeat(5-r.rating):'';
     const photos=r.photos&&r.photos.length?`<div class="photo-strip">${r.photos.map(p=>`<img src="${p}" onclick="openLightbox('${p}')">`).join('')}</div>`:'';
     return `<div style="background:white;border-radius:16px;padding:20px;border:1px solid var(--border);display:flex;gap:16px;" data-journal-status="${r.status}">
@@ -1173,7 +1211,7 @@ function renderJournal() {
       <div style="flex:1;min-width:0;">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
           <div><div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;">${r.name}</div>
-          <div style="font-size:12px;color:#888;margin-top:2px;">📍 ${r.city||''}${r.country?', '+r.country:''}${r.date?' &nbsp;·&nbsp; 📅 '+fmtDate(r.date):''}</div></div>
+          <div style="font-size:12px;color:#888;margin-top:2px;">📍 ${r.city||''}${r.country?', '+r.country:''}${r.cuisine&&r.cuisine!=='Restaurant'?' · 🍽 '+r.cuisine:''}${r.date?' &nbsp;·&nbsp; 📅 '+fmtDate(r.date):''}</div></div>
           <div style="text-align:right;flex-shrink:0;">${stars?`<div style="color:var(--gold);font-size:14px;">${stars}</div>`:''}
           <div style="font-size:11px;font-weight:600;color:${statusColorV[r.status]};margin-top:2px;">${statusLabel[r.status]}</div></div>
         </div>
@@ -1211,14 +1249,14 @@ function updateStats(){
   });
   const cuisines={};
   visited.forEach(r=>{if(r.cuisine&&r.cuisine!=='Restaurant')cuisines[r.cuisine]=(cuisines[r.cuisine]||0)+1;});
-  const sorted=Object.entries(cuisines).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  const mx=sorted[0]?.[1]||1;
+  const sorted=Object.entries(cuisines).sort((a,b)=>b[1]-a[1]).slice(0,8);
   document.getElementById('cuisine-bars').innerHTML=sorted.length
-    ?sorted.map(([c,n])=>`<div class="bar-row"><div class="bar-label">${c}</div><div class="bar-track"><div class="bar-fill" style="width:${n/mx*100}%"></div></div><div class="bar-count">${n}</div></div>`).join('')
-    :'<div style="color:#aaa;font-size:13px;padding:8px 0">No data yet</div>';
+    ? sorted.map(([c,n])=>`<div class="cuisine-tag">${c}<span class="cuisine-count">${n}</span></div>`).join('')
+    : '<div style="color:#aaa;font-size:13px;padding:8px 0">Log some restaurants to see your top cuisines</div>';
 }
 
 function uniqueCities(){ return new Set(myLogs.filter(r=>r.status!=='wishlist'&&r.city).map(r=>r.city)).size; }
+
 function fmtDate(d){ if(!d)return''; try{const[y,m,day]=d.split('-');return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' '+parseInt(day)+', '+y;}catch{return d;} }
 
 // ── VIEWS ──
@@ -1241,16 +1279,20 @@ function handleFiles(files){
     r.readAsDataURL(f);
   });
 }
+
 function handleDrop(e){e.preventDefault();document.getElementById('upload-area').classList.remove('drag-over');handleFiles(e.dataTransfer.files);}
+
 function renderPreviews(){
   document.getElementById('photo-previews').innerHTML=uploadedPhotos.map((src,i)=>
     `<div class="photo-thumb-wrap"><img src="${src}"><button class="photo-remove" onclick="removePhoto(${i})">✕</button></div>`
   ).join('');
 }
+
 function removePhoto(i){uploadedPhotos.splice(i,1);renderPreviews();}
 
 // ── LIGHTBOX ──
 function openLightbox(src){document.getElementById('lightbox-img').src=src;document.getElementById('lightbox').classList.add('open');}
+
 function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
 
 function showToast(msg,isError=false){
@@ -1261,7 +1303,6 @@ function showToast(msg,isError=false){
 
 document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
 
-// Start the app — check if user is already logged in
 checkSession();
 </script>
 
