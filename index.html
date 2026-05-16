@@ -4,296 +4,227 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mappetite — Your Restaurant Journal</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
     --cream: #F7F3ED; --ink: #1A1208; --rust: #C4541A;
     --gold: #D4A853; --sage: #6B8F71; --blush: #E8C4B0;
     --card: #FFFCF8; --border: #E2D9CE;
+    --loved: #2ECC71; --liked: #F39C12; --meh: #999; --wish: #E8620A;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   html, body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--ink); display:flex; flex-direction:column; }
 
-  nav { background:var(--ink); color:var(--cream); padding:0 24px; height:56px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; z-index:100; }
-  .logo { font-family:'Playfair Display',serif; font-size:22px; letter-spacing:-0.5px; display:flex; align-items:center; gap:8px; }
+  /* ── NAV ── */
+  nav { background:var(--ink); color:var(--cream); padding:0 20px; height:54px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; z-index:100; box-shadow:0 2px 12px rgba(0,0,0,0.2); }
+  .logo { font-family:'Playfair Display',serif; font-size:21px; letter-spacing:-0.5px; display:flex; align-items:center; gap:8px; }
   .logo span { color:var(--gold); }
-  .nav-tabs { display:flex; gap:4px; }
-  .nav-tab { padding:6px 16px; border-radius:20px; font-size:13px; font-weight:500; cursor:pointer; color:#aaa; transition:all 0.2s; border:none; background:none; font-family:'DM Sans',sans-serif; }
+  .nav-tabs { display:flex; gap:2px; background:rgba(255,255,255,0.06); border-radius:22px; padding:3px; }
+  .nav-tab { padding:5px 14px; border-radius:18px; font-size:13px; font-weight:500; cursor:pointer; color:rgba(255,255,255,0.5); transition:all 0.2s; border:none; background:none; font-family:'DM Sans',sans-serif; }
   .nav-tab.active { background:var(--rust); color:white; }
-  .nav-tab:hover:not(.active) { color:var(--cream); }
-  .avatar { width:32px; height:32px; border-radius:50%; background:var(--gold); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; color:var(--ink); }
+  .nav-tab:hover:not(.active) { color:white; }
+  .avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--gold),#B8922A); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:var(--ink); cursor:pointer; border:2px solid rgba(255,255,255,0.15); }
 
   .app-body { display:flex; flex:1; overflow:hidden; }
 
-  /* SIDEBAR */
-  .sidebar { width:340px; flex-shrink:0; background:var(--card); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
-  .sidebar-header { padding:20px 20px 12px; border-bottom:1px solid var(--border); flex-shrink:0; }
-  .sidebar-title { font-family:'Playfair Display',serif; font-size:18px; margin-bottom:12px; }
-  .search-box { display:flex; align-items:center; background:var(--cream); border:1px solid var(--border); border-radius:8px; padding:8px 12px; gap:8px; margin-bottom:10px; }
+  /* ── SIDEBAR ── */
+  .sidebar { width:320px; flex-shrink:0; background:var(--card); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
+  .sidebar-header { padding:16px 16px 10px; border-bottom:1px solid var(--border); flex-shrink:0; }
+  .sidebar-title { font-family:'Playfair Display',serif; font-size:17px; margin-bottom:10px; color:var(--ink); }
+  .search-box { display:flex; align-items:center; background:var(--cream); border:1.5px solid var(--border); border-radius:10px; padding:7px 11px; gap:7px; margin-bottom:10px; transition:border-color 0.2s; }
+  .search-box:focus-within { border-color:var(--rust); }
   .search-box input { border:none; background:none; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--ink); width:100%; outline:none; }
-  .filter-row { display:flex; gap:6px; flex-wrap:wrap; }
-  .filter-chip { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:500; cursor:pointer; border:1px solid var(--border); background:white; color:#666; transition:all 0.15s; user-select:none; }
+  .filter-row { display:flex; gap:5px; flex-wrap:wrap; }
+  .filter-chip { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; cursor:pointer; border:1.5px solid var(--border); background:white; color:#888; transition:all 0.15s; user-select:none; letter-spacing:0.2px; }
   .filter-chip.active { background:var(--ink); color:white; border-color:var(--ink); }
   .filter-chip:hover:not(.active) { border-color:var(--rust); color:var(--rust); }
 
-  .restaurant-list { flex:1; overflow-y:auto; padding:12px; }
-  .restaurant-list::-webkit-scrollbar { width:4px; }
+  .restaurant-list { flex:1; overflow-y:auto; padding:10px; }
+  .restaurant-list::-webkit-scrollbar { width:3px; }
   .restaurant-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
-  .section-label { font-size:11px; font-weight:500; color:#999; text-transform:uppercase; letter-spacing:0.8px; padding:8px 4px 6px; }
+  .section-label { font-size:10px; font-weight:700; color:#bbb; text-transform:uppercase; letter-spacing:1px; padding:8px 4px 5px; }
 
-  .restaurant-card { background:white; border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:8px; cursor:pointer; transition:all 0.18s; position:relative; }
-  .restaurant-card:hover, .restaurant-card.selected { border-color:var(--rust); box-shadow:0 2px 12px rgba(196,84,26,0.1); transform:translateY(-1px); }
+  .restaurant-card { background:white; border:1.5px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:7px; cursor:pointer; transition:all 0.18s; position:relative; overflow:hidden; }
+  .restaurant-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:3px 0 0 3px; background:var(--border); transition:background 0.2s; }
+  .restaurant-card.loved::before { background:var(--loved); }
+  .restaurant-card.liked::before { background:var(--liked); }
+  .restaurant-card.meh::before { background:var(--meh); }
+  .restaurant-card.wishlist::before { background:var(--wish); }
+  .restaurant-card:hover, .restaurant-card.selected { border-color:var(--rust); box-shadow:0 3px 16px rgba(196,84,26,0.12); transform:translateY(-1px); }
   .restaurant-card.selected { background:#FFF8F5; }
-  .card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px; }
-  .card-name { font-family:'Playfair Display',serif; font-size:15px; font-weight:700; line-height:1.2; padding-right:12px; }
-  .card-rating { font-size:12px; font-weight:600; flex-shrink:0; }
-  .card-meta { font-size:12px; color:#888; margin-bottom:5px; }
-  .card-note { font-size:12px; color:#666; font-style:italic; line-height:1.4; border-left:2px solid var(--blush); padding-left:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-  .status-dot { width:8px; height:8px; border-radius:50%; position:absolute; top:14px; right:14px; }
-  .status-dot.loved { background:#2ECC71; }
-  .status-dot.liked { background:#F39C12; }
-  .status-dot.meh { background:#aaa; }
-  .status-dot.wishlist { background:#E8620A; }
+  .card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:3px; padding-left:8px; }
+  .card-name { font-family:'Playfair Display',serif; font-size:14px; font-weight:700; line-height:1.2; padding-right:8px; }
+  .card-stars { color:var(--gold); font-size:11px; flex-shrink:0; }
+  .card-meta { font-size:11px; color:#aaa; padding-left:8px; }
+  .card-note { font-size:11px; color:#777; font-style:italic; line-height:1.4; padding-left:8px; margin-top:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 
-  .add-btn { margin:8px 12px 12px; background:var(--rust); color:white; border:none; border-radius:10px; padding:12px; width:calc(100% - 24px); font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:background 0.2s; flex-shrink:0; }
-  .add-btn:hover { background:#A8441A; }
-
-  .loading-state { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; gap:12px; color:#aaa; font-size:14px; }
-  .spinner { width:28px; height:28px; border:3px solid var(--border); border-top-color:var(--rust); border-radius:50%; animation:spin 0.8s linear infinite; }
+  .loading-state { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; gap:12px; color:#bbb; font-size:13px; }
+  .spinner { width:24px; height:24px; border:2.5px solid var(--border); border-top-color:var(--rust); border-radius:50%; animation:spin 0.8s linear infinite; }
   @keyframes spin { to{transform:rotate(360deg)} }
-  .empty-state { text-align:center; padding:32px 20px; color:#aaa; }
-  .empty-state .empty-icon { font-size:36px; margin-bottom:10px; }
-  .empty-state p { font-size:13px; line-height:1.6; }
+  .empty-state { text-align:center; padding:32px 20px; color:#bbb; }
+  .empty-state .empty-icon { font-size:32px; margin-bottom:8px; }
+  .empty-state p { font-size:12px; line-height:1.7; }
 
-  /* MAP */
+  /* ── MAP ── */
   .map-area { flex:1; position:relative; overflow:hidden; }
   #google-map { width:100%; height:100%; }
 
-  .map-stats { position:absolute; top:16px; right:16px; background:white; border-radius:12px; padding:12px 16px; box-shadow:0 2px 12px rgba(0,0,0,0.12); border:1px solid var(--border); display:flex; gap:20px; z-index:5; }
+  .map-stats { position:absolute; top:14px; right:14px; background:white; border-radius:14px; padding:10px 16px; box-shadow:0 2px 16px rgba(0,0,0,0.1); border:1px solid var(--border); display:flex; gap:18px; z-index:5; }
   .stat-item { text-align:center; }
-  .stat-num { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--rust); line-height:1; }
-  .stat-label { font-size:11px; color:#888; margin-top:2px; }
+  .stat-num { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--rust); line-height:1; }
+  .stat-label { font-size:10px; color:#aaa; margin-top:2px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
 
-  /* City search on map */
-  .map-search { position:absolute; top:16px; left:16px; z-index:5; display:flex; gap:8px; }
-  .map-search input { padding:10px 14px; border-radius:10px; border:1px solid var(--border); font-family:'DM Sans',sans-serif; font-size:13px; width:280px; outline:none; box-shadow:0 2px 8px rgba(0,0,0,0.1); background:white; }
-  .map-search input:focus { border-color:var(--rust); }
-  .locate-btn { padding:10px 12px; background:white; border:1px solid var(--border); border-radius:10px; font-size:16px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-  .locate-btn:hover { background:var(--cream); }
+  .map-search { position:absolute; top:14px; left:14px; z-index:5; display:flex; gap:8px; }
+  .map-search input { padding:9px 14px; border-radius:12px; border:1px solid var(--border); font-family:'DM Sans',sans-serif; font-size:13px; width:260px; outline:none; box-shadow:0 2px 12px rgba(0,0,0,0.08); background:white; transition:border-color 0.2s,box-shadow 0.2s; }
+  .map-search input:focus { border-color:var(--rust); box-shadow:0 2px 12px rgba(196,84,26,0.12); }
+  .locate-btn { width:38px; height:38px; background:white; border:1px solid var(--border); border-radius:12px; font-size:0; cursor:pointer; box-shadow:0 2px 12px rgba(0,0,0,0.08); display:flex; align-items:center; justify-content:center; transition:all 0.2s; flex-shrink:0; }
+  .locate-btn:hover { background:var(--cream); border-color:var(--rust); }
 
-  .map-legend { position:absolute; bottom:30px; left:16px; background:white; border-radius:10px; padding:10px 14px; box-shadow:0 2px 10px rgba(0,0,0,0.08); border:1px solid var(--border); z-index:5; }
-  .legend-title { font-size:11px; font-weight:600; color:#888; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px; }
-  .legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:#555; margin-bottom:3px; }
+  .map-legend { position:absolute; bottom:28px; left:14px; background:white; border-radius:12px; padding:10px 14px; box-shadow:0 2px 12px rgba(0,0,0,0.08); border:1px solid var(--border); z-index:5; }
+  .legend-title { font-size:10px; font-weight:700; color:#aaa; margin-bottom:7px; text-transform:uppercase; letter-spacing:0.8px; }
+  .legend-item { display:flex; align-items:center; gap:7px; font-size:12px; color:#666; margin-bottom:4px; }
   .legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 
-  /* PLACE DETAIL PANEL — slides up from bottom of map */
-  .place-panel {
-    position:absolute; bottom:0; left:0; right:0; z-index:20;
-    background:white; border-radius:20px 20px 0 0;
-    box-shadow:0 -4px 30px rgba(0,0,0,0.15);
-    transform:translateY(100%); transition:transform 0.35s cubic-bezier(0.34,1.2,0.64,1);
-    max-height:70%;
-    display:flex; flex-direction:column;
-  }
+  /* ── PLACE PANEL ── */
+  .place-panel { position:absolute; bottom:0; left:0; right:0; z-index:20; background:white; border-radius:20px 20px 0 0; box-shadow:0 -6px 40px rgba(0,0,0,0.13); transform:translateY(100%); transition:transform 0.35s cubic-bezier(0.34,1.2,0.64,1); max-height:72%; display:flex; flex-direction:column; }
   .place-panel.open { transform:translateY(0); }
-  .panel-handle { width:40px; height:4px; background:var(--border); border-radius:2px; margin:12px auto 0; flex-shrink:0; }
-  .panel-body { padding:16px 20px 24px; overflow-y:auto; }
-  .panel-close { position:absolute; top:16px; right:16px; background:var(--cream); border:none; border-radius:50%; width:28px; height:28px; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#666; }
-  .panel-name { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; margin-bottom:4px; padding-right:36px; }
-  .panel-meta { font-size:13px; color:#888; margin-bottom:4px; }
+  .panel-handle { width:36px; height:4px; background:var(--border); border-radius:2px; margin:12px auto 0; flex-shrink:0; }
+  .panel-body { padding:14px 20px 24px; overflow-y:auto; }
+  .panel-close { position:absolute; top:14px; right:14px; background:var(--cream); border:none; border-radius:50%; width:28px; height:28px; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#888; transition:background 0.2s; }
+  .panel-close:hover { background:var(--border); }
+  .panel-name { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; margin-bottom:3px; padding-right:36px; }
+  .panel-meta { font-size:12px; color:#aaa; margin-bottom:4px; }
   .panel-google-rating { display:flex; align-items:center; gap:6px; font-size:13px; margin-bottom:14px; }
   .panel-stars { color:var(--gold); letter-spacing:1px; }
-
-  .panel-logged { background:var(--cream); border-radius:12px; padding:14px; margin-bottom:14px; border:1px solid var(--border); }
-  .panel-logged-title { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.6px; color:#999; margin-bottom:8px; }
-  .panel-logged-content { font-size:13px; color:#555; }
-
-  .log-btn { width:100%; padding:13px; background:var(--rust); color:white; border:none; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; cursor:pointer; transition:background 0.2s; }
+  .panel-logged { background:var(--cream); border-radius:12px; padding:12px 14px; margin-bottom:12px; border:1px solid var(--border); }
+  .panel-logged-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:#bbb; margin-bottom:6px; }
+  .panel-logged-content { font-size:13px; color:#555; line-height:1.5; }
+  .log-btn { width:100%; padding:12px; background:var(--rust); color:white; border:none; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; transition:background 0.2s; letter-spacing:0.2px; }
   .log-btn:hover { background:#A8441A; }
-  .log-btn.secondary { background:white; color:var(--rust); border:2px solid var(--rust); margin-top:8px; }
+  .log-btn.secondary { background:white; color:var(--rust); border:2px solid var(--rust); margin-top:8px; font-weight:500; }
   .log-btn.secondary:hover { background:#FFF8F5; }
 
-  /* JOURNAL */
-  .journal-view { display:none; flex:1; overflow-y:auto; padding:32px; background:var(--cream); flex-direction:column; }
+  /* ── JOURNAL ── */
+  .journal-view { display:none; flex:1; overflow-y:auto; padding:28px 32px; background:var(--cream); flex-direction:column; }
   .journal-view.visible { display:flex; }
+  .page-title { font-family:'Playfair Display',serif; font-size:26px; margin-bottom:4px; }
+  .page-sub { font-size:13px; color:#aaa; margin-bottom:20px; }
   .photo-strip { display:flex; gap:6px; margin-top:10px; overflow-x:auto; scrollbar-width:none; }
   .photo-strip::-webkit-scrollbar { display:none; }
-  .photo-strip img { height:80px; width:80px; object-fit:cover; border-radius:8px; border:1px solid var(--border); flex-shrink:0; cursor:pointer; transition:transform 0.15s; }
-  .photo-strip img:hover { transform:scale(1.04); }
+  .photo-strip img { height:72px; width:72px; object-fit:cover; border-radius:8px; border:1px solid var(--border); flex-shrink:0; cursor:pointer; transition:transform 0.15s; }
+  .photo-strip img:hover { transform:scale(1.05); }
+  .journal-card { background:white; border-radius:16px; padding:18px 20px; border:1px solid var(--border); display:flex; gap:14px; transition:box-shadow 0.2s; }
+  .journal-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.07); }
+  .journal-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+  .journal-icon.loved { background:linear-gradient(135deg,#d4f5e0,#a8e6c0); }
+  .journal-icon.liked { background:linear-gradient(135deg,#fef0cc,#fce0a0); }
+  .journal-icon.meh { background:linear-gradient(135deg,#f0f0f0,#e0e0e0); }
 
-  /* STATS */
-  .stats-view { display:none; flex:1; overflow-y:auto; padding:32px; background:var(--cream); }
+  /* ── STATS ── */
+  .stats-view { display:none; flex:1; overflow-y:auto; padding:28px 32px; background:var(--cream); }
   .stats-view.visible { display:block; }
-  .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:32px; }
-  .big-stat { background:white; border:1px solid var(--border); border-radius:16px; padding:24px; text-align:center; }
-  .big-num { font-family:'Playfair Display',serif; font-size:48px; font-weight:700; color:var(--rust); line-height:1; }
-  .big-label { font-size:14px; color:#888; margin-top:6px; }
-  .chart-card { background:white; border:1px solid var(--border); border-radius:16px; padding:24px; margin-bottom:16px; }
-  .chart-title { font-family:'Playfair Display',serif; font-size:17px; margin-bottom:16px; }
-  .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-  .bar-label { font-size:13px; color:#666; width:100px; flex-shrink:0; }
-  .bar-track { flex:1; background:var(--cream); border-radius:4px; height:12px; overflow:hidden; }
+  .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px; }
+  .big-stat { background:white; border:1px solid var(--border); border-radius:16px; padding:20px; text-align:center; }
+  .big-num { font-family:'Playfair Display',serif; font-size:44px; font-weight:700; color:var(--rust); line-height:1; }
+  .big-label { font-size:12px; color:#aaa; margin-top:4px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+  .chart-card { background:white; border:1px solid var(--border); border-radius:16px; padding:20px; margin-bottom:14px; }
+  .chart-title { font-family:'Playfair Display',serif; font-size:16px; margin-bottom:14px; }
+  .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:9px; }
+  .bar-label { font-size:12px; color:#666; width:90px; flex-shrink:0; }
+  .bar-track { flex:1; background:var(--cream); border-radius:4px; height:10px; overflow:hidden; }
   .bar-fill { height:100%; border-radius:4px; background:var(--rust); transition:width 0.6s ease; }
-  .bar-fill.gold { background:var(--gold); }
-  .bar-fill.sage { background:var(--sage); }
-  .bar-count { font-size:13px; font-weight:600; color:var(--ink); width:24px; text-align:right; }
-  .wishlist-banner { background:linear-gradient(135deg,var(--rust),#8B3010); color:white; border-radius:16px; padding:24px; display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
-  .wishlist-text h3 { font-family:'Playfair Display',serif; font-size:20px; margin-bottom:4px; }
-  .wishlist-text p { font-size:14px; opacity:0.8; }
-  .wishlist-num { font-family:'Playfair Display',serif; font-size:64px; font-weight:700; opacity:0.9; }
+  .bar-fill.sage { background:var(--loved); }
+  .bar-fill.gold { background:var(--liked); }
+  .bar-count { font-size:12px; font-weight:600; color:var(--ink); width:20px; text-align:right; }
+  .wishlist-banner { background:linear-gradient(135deg,#C4541A,#8B3010); color:white; border-radius:16px; padding:22px 24px; display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .wishlist-text h3 { font-family:'Playfair Display',serif; font-size:18px; margin-bottom:3px; }
+  .wishlist-text p { font-size:13px; opacity:0.75; }
+  .wishlist-num { font-family:'Playfair Display',serif; font-size:56px; font-weight:700; opacity:0.9; }
+  .cuisine-grid { display:flex; flex-wrap:wrap; gap:7px; }
+  .cuisine-tag { padding:5px 13px; border-radius:20px; font-size:12px; font-weight:600; background:var(--cream); border:1px solid var(--border); color:var(--ink); display:flex; align-items:center; gap:6px; }
+  .cuisine-tag .cuisine-count { background:var(--rust); color:white; border-radius:10px; padding:1px 6px; font-size:10px; font-weight:700; }
 
-  /* LOG MODAL */
-  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(3px); z-index:200; display:none; align-items:center; justify-content:center; }
+  /* ── LOG MODAL ── */
+  .modal-overlay { position:fixed; inset:0; background:rgba(26,18,8,0.6); backdrop-filter:blur(4px); z-index:200; display:none; align-items:center; justify-content:center; }
   .modal-overlay.open { display:flex; animation:fadeIn 0.2s ease; }
   @keyframes fadeIn { from{opacity:0}to{opacity:1} }
-  .modal { background:white; border-radius:20px; width:460px; max-height:85vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.2); animation:slideUp 0.25s ease; }
+  .modal { background:white; border-radius:22px; width:440px; max-height:88vh; overflow-y:auto; box-shadow:0 24px 80px rgba(0,0,0,0.22); animation:slideUp 0.25s ease; }
   @keyframes slideUp { from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1} }
-  .modal-header { padding:20px 24px 14px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:flex-start; }
-  .modal-title { font-family:'Playfair Display',serif; font-size:18px; line-height:1.3; }
-  .modal-subtitle { font-size:12px; color:#888; margin-top:2px; }
-  .modal-close { width:32px; height:32px; border-radius:50%; background:var(--cream); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; color:#666; flex-shrink:0; margin-left:10px; }
-  .modal-body { padding:18px 24px 24px; }
-  .form-group { margin-bottom:16px; }
-  .form-label { display:block; font-size:13px; font-weight:500; color:#555; margin-bottom:6px; }
-  .form-input { width:100%; padding:10px 14px; border:1px solid var(--border); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--ink); background:var(--cream); outline:none; transition:border-color 0.2s; }
-  .form-input:focus { border-color:var(--rust); }
-  .form-textarea { width:100%; padding:10px 14px; border:1px solid var(--border); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--ink); background:var(--cream); outline:none; resize:vertical; min-height:80px; transition:border-color 0.2s; }
-  .form-textarea:focus { border-color:var(--rust); }
-  .rating-group { display:flex; gap:8px; }
-  .rating-option { flex:1; padding:10px 6px; border:2px solid var(--border); border-radius:10px; text-align:center; cursor:pointer; font-size:12px; font-weight:500; transition:all 0.15s; color:#666; }
-  .rating-option.selected.loved { border-color:var(--sage); background:rgba(107,143,113,0.1); color:var(--sage); }
-  .rating-option.selected.liked { border-color:var(--gold); background:rgba(212,168,83,0.1); color:#B8922A; }
-  .rating-option.selected.meh { border-color:#aaa; background:#f5f5f5; color:#777; }
-  .rating-option.selected.wishlist { border-color:var(--rust); background:rgba(196,84,26,0.08); color:var(--rust); }
-  .star-row { display:flex; gap:6px; }
-  .star-btn { font-size:24px; cursor:pointer; color:#ddd; transition:color 0.1s; background:none; border:none; padding:2px; }
-  .star-btn.filled { color:var(--gold); }
-  .submit-btn { width:100%; padding:14px; background:var(--rust); color:white; border:none; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:500; cursor:pointer; margin-top:4px; transition:background 0.2s; }
+  .modal-header { padding:18px 22px 14px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:flex-start; }
+  .modal-title { font-family:'Playfair Display',serif; font-size:17px; line-height:1.3; }
+  .modal-subtitle { font-size:11px; color:#aaa; margin-top:2px; }
+  .modal-close { width:30px; height:30px; border-radius:50%; background:var(--cream); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:15px; color:#888; flex-shrink:0; margin-left:10px; transition:background 0.2s; }
+  .modal-close:hover { background:var(--border); }
+  .modal-body { padding:16px 22px 22px; }
+  .form-group { margin-bottom:14px; }
+  .form-label { display:block; font-size:12px; font-weight:600; color:#888; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px; }
+  .form-input { width:100%; padding:9px 13px; border:1.5px solid var(--border); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--ink); background:var(--cream); outline:none; transition:border-color 0.2s; }
+  .form-input:focus { border-color:var(--rust); background:white; }
+  .form-textarea { width:100%; padding:9px 13px; border:1.5px solid var(--border); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--ink); background:var(--cream); outline:none; resize:vertical; min-height:76px; transition:border-color 0.2s; }
+  .form-textarea:focus { border-color:var(--rust); background:white; }
+  .submit-btn { width:100%; padding:13px; background:var(--rust); color:white; border:none; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; margin-top:4px; transition:background 0.2s; letter-spacing:0.2px; }
   .submit-btn:hover { background:#A8441A; }
   .submit-btn:disabled { background:#ccc; cursor:not-allowed; }
 
-  .photo-upload-area { border:2px dashed var(--border); border-radius:12px; padding:18px; text-align:center; cursor:pointer; transition:all 0.2s; background:var(--cream); position:relative; }
-  .photo-upload-area:hover { border-color:var(--rust); background:rgba(196,84,26,0.04); }
+  /* Unified star rating */
+  .star-rating-block { background:linear-gradient(135deg,#fdfaf6,#f7f3ed); border-radius:14px; padding:16px; text-align:center; border:1.5px solid var(--border); }
+  .star-row-big { display:flex; justify-content:center; gap:6px; margin-bottom:7px; }
+  .star-big { font-size:34px; cursor:pointer; color:#e0d9ce; background:none; border:none; transition:color 0.1s, transform 0.12s; line-height:1; padding:0 2px; }
+  .star-big.filled { color:var(--gold); }
+  .star-big:hover { transform:scale(1.18); }
+  .star-label { font-size:13px; font-weight:600; color:#aaa; min-height:18px; margin-bottom:10px; transition:all 0.2s; }
+  .star-label.loved { color:#27AE60; }
+  .star-label.liked { color:#E67E22; }
+  .star-label.meh { color:#999; }
+  .star-badges { display:flex; justify-content:center; }
+  .star-badge { font-size:12px; color:#bbb; cursor:pointer; padding:4px 12px; border-radius:20px; border:1.5px solid var(--border); background:white; transition:all 0.15s; }
+  .star-badge:hover { border-color:var(--wish); color:var(--wish); }
+  .star-badge.wishlist-active { background:rgba(232,98,10,0.07); border-color:var(--wish); color:var(--wish); font-weight:600; }
+
+  /* Photos */
+  .photo-upload-area { border:2px dashed var(--border); border-radius:12px; padding:16px; text-align:center; cursor:pointer; transition:all 0.2s; background:var(--cream); position:relative; }
+  .photo-upload-area:hover { border-color:var(--rust); background:rgba(196,84,26,0.03); }
   .photo-upload-area input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
-  .upload-icon { font-size:24px; margin-bottom:4px; }
-  .upload-text { font-size:12px; color:#888; }
+  .upload-icon { font-size:22px; margin-bottom:3px; }
+  .upload-text { font-size:11px; color:#bbb; }
   .upload-text strong { color:var(--rust); }
-  .photo-previews { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
-  .photo-thumb-wrap { position:relative; width:68px; height:68px; }
+  .photo-previews { display:flex; flex-wrap:wrap; gap:7px; margin-top:9px; }
+  .photo-thumb-wrap { position:relative; width:64px; height:64px; }
   .photo-thumb-wrap img { width:100%; height:100%; object-fit:cover; border-radius:8px; border:1px solid var(--border); display:block; }
-  .photo-remove { position:absolute; top:-6px; right:-6px; width:18px; height:18px; background:var(--ink); color:white; border-radius:50%; font-size:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; border:none; }
-
-  .lightbox { position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:500; display:none; align-items:center; justify-content:center; }
-  .lightbox.open { display:flex; }
-  .lightbox img { max-width:88vw; max-height:88vh; border-radius:12px; }
-  .lightbox-close { position:absolute; top:20px; right:24px; font-size:32px; color:white; cursor:pointer; background:none; border:none; }
-
-  .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink); color:white; padding:12px 24px; border-radius:30px; font-size:14px; z-index:300; opacity:0; transition:all 0.3s; pointer-events:none; white-space:nowrap; }
-  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-  .toast.error { background:#c0392b; }
+  .photo-remove { position:absolute; top:-5px; right:-5px; width:16px; height:16px; background:var(--ink); color:white; border-radius:50%; font-size:9px; display:flex; align-items:center; justify-content:center; cursor:pointer; border:none; }
 
   /* ── AUTH SCREEN ── */
-  .auth-screen {
-    position:fixed; inset:0; z-index:1000;
-    background:var(--cream);
-    display:flex; align-items:center; justify-content:center;
-    font-family:'DM Sans',sans-serif;
-  }
+  .auth-screen { position:fixed; inset:0; z-index:1000; background:linear-gradient(160deg,#1A1208 0%,#2d1e0f 50%,#1A1208 100%); display:flex; align-items:center; justify-content:center; }
   .auth-screen.hidden { display:none; }
-  .auth-box {
-    background:white; border-radius:24px; padding:40px;
-    width:400px; max-width:92vw;
-    box-shadow:0 8px 40px rgba(0,0,0,0.12);
-    border:1px solid var(--border);
-  }
-  .auth-logo {
-    font-family:'Playfair Display',serif; font-size:28px;
-    text-align:center; margin-bottom:6px;
-  }
+  .auth-box { background:white; border-radius:24px; padding:40px 36px; width:380px; max-width:92vw; box-shadow:0 24px 80px rgba(0,0,0,0.4); }
+  .auth-logo { font-family:'Playfair Display',serif; font-size:30px; text-align:center; margin-bottom:6px; }
   .auth-logo span { color:var(--gold); }
-  .auth-tagline { text-align:center; font-size:13px; color:#888; margin-bottom:32px; }
-  .auth-tabs { display:flex; background:var(--cream); border-radius:10px; padding:4px; margin-bottom:24px; }
-  .auth-tab {
-    flex:1; padding:8px; text-align:center; border-radius:8px;
-    font-size:13px; font-weight:500; cursor:pointer; color:#888;
-    border:none; background:none; font-family:'DM Sans',sans-serif; transition:all 0.2s;
-  }
-  .auth-tab.active { background:white; color:var(--ink); box-shadow:0 1px 4px rgba(0,0,0,0.1); }
-  .auth-input {
-    width:100%; padding:11px 14px; border:1px solid var(--border);
-    border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px;
-    color:var(--ink); background:var(--cream); outline:none; margin-bottom:12px;
-    transition:border-color 0.2s;
-  }
-  .auth-input:focus { border-color:var(--rust); }
-  .auth-btn {
-    width:100%; padding:13px; background:var(--rust); color:white;
-    border:none; border-radius:12px; font-family:'DM Sans',sans-serif;
-    font-size:15px; font-weight:500; cursor:pointer; transition:background 0.2s;
-    margin-bottom:12px;
-  }
-  .auth-btn:hover { background:#A8441A; }
-  .auth-btn:disabled { background:#ccc; cursor:not-allowed; }
-  .auth-divider { display:flex; align-items:center; gap:12px; margin:4px 0 12px; color:#ccc; font-size:12px; }
-  .auth-divider::before, .auth-divider::after { content:''; flex:1; height:1px; background:var(--border); }
-  .auth-google-btn {
-    width:100%; padding:11px; background:white; color:var(--ink);
-    border:1px solid var(--border); border-radius:12px; font-family:'DM Sans',sans-serif;
-    font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s;
-    display:flex; align-items:center; justify-content:center; gap:10px;
-  }
-  .auth-google-btn:hover { background:var(--cream); border-color:#aaa; }
-  .auth-error { font-size:13px; color:#c0392b; margin-bottom:10px; text-align:center; min-height:18px; }
-  .auth-success { font-size:13px; color:var(--sage); margin-bottom:10px; text-align:center; min-height:18px; }
+  .auth-tagline { text-align:center; font-size:13px; color:#aaa; margin-bottom:32px; line-height:1.5; }
+  .auth-google-btn { width:100%; padding:13px; background:white; color:var(--ink); border:2px solid var(--border); border-radius:14px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:12px; }
+  .auth-google-btn:hover { background:var(--cream); border-color:#aaa; box-shadow:0 4px 16px rgba(0,0,0,0.08); }
+  .auth-note { text-align:center; font-size:11px; color:#ccc; margin-top:16px; line-height:1.6; }
+  .auth-error { font-size:12px; color:#c0392b; margin-bottom:12px; text-align:center; min-height:16px; }
 
-  /* User menu dropdown */
+  /* User menu */
   .user-menu-wrap { position:relative; }
-  .user-menu {
-    position:absolute; top:44px; right:0;
-    background:white; border:1px solid var(--border); border-radius:12px;
-    padding:6px; min-width:180px;
-    box-shadow:0 4px 20px rgba(0,0,0,0.12); z-index:200;
-    display:none;
-  }
+  .user-menu { position:absolute; top:42px; right:0; background:white; border:1px solid var(--border); border-radius:14px; padding:6px; min-width:190px; box-shadow:0 6px 24px rgba(0,0,0,0.12); z-index:200; display:none; }
   .user-menu.open { display:block; animation:fadeIn 0.15s ease; }
-  .user-menu-email { font-size:12px; color:#888; padding:8px 12px 6px; border-bottom:1px solid var(--border); margin-bottom:4px; word-break:break-all; }
-  .user-menu-item { padding:9px 12px; border-radius:8px; font-size:13px; cursor:pointer; color:var(--ink); }
+  .user-menu-email { font-size:11px; color:#aaa; padding:8px 12px 6px; border-bottom:1px solid var(--border); margin-bottom:4px; word-break:break-all; }
+  .user-menu-item { padding:8px 12px; border-radius:8px; font-size:13px; cursor:pointer; color:var(--ink); }
   .user-menu-item:hover { background:var(--cream); }
   .user-menu-item.danger { color:#c0392b; }
 
-  /* Unified star rating */
-  .star-rating-block { background:var(--cream); border-radius:14px; padding:18px; text-align:center; border:1px solid var(--border); }
-  .star-row-big { display:flex; justify-content:center; gap:8px; margin-bottom:8px; }
-  .star-big { font-size:36px; cursor:pointer; color:#ddd; background:none; border:none; transition:color 0.1s, transform 0.1s; line-height:1; padding:0 2px; }
-  .star-big.filled { color:var(--gold); }
-  .star-big:hover { transform:scale(1.15); }
-  .star-label { font-size:14px; font-weight:500; color:#888; min-height:20px; margin-bottom:10px; transition:all 0.2s; }
-  .star-label.loved { color:#27AE60; }
-  .star-label.liked { color:#E67E22; }
-  .star-label.meh { color:#888; }
-  .star-badges { display:flex; justify-content:center; }
-  .star-badge { font-size:12px; color:#aaa; cursor:pointer; padding:5px 12px; border-radius:20px; border:1px solid var(--border); background:white; transition:all 0.15s; }
-  .star-badge:hover { border-color:var(--rust); color:var(--rust); }
-  .star-badge.wishlist-active { background:rgba(232,98,10,0.08); border-color:#E8620A; color:#E8620A; font-weight:500; }
+  /* Misc */
+  .lightbox { position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:500; display:none; align-items:center; justify-content:center; }
+  .lightbox.open { display:flex; }
+  .lightbox img { max-width:88vw; max-height:88vh; border-radius:12px; }
+  .lightbox-close { position:absolute; top:20px; right:24px; font-size:32px; color:white; cursor:pointer; background:none; border:none; }
+  .toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink); color:white; padding:11px 22px; border-radius:30px; font-size:13px; font-weight:500; z-index:300; opacity:0; transition:all 0.3s; pointer-events:none; white-space:nowrap; box-shadow:0 4px 20px rgba(0,0,0,0.2); }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.error { background:#c0392b; }
 
-  /* User location dot */
-  .user-location-dot {
-    width:18px; height:18px; position:relative;
-  }
-  .user-location-dot::before {
-    content:''; position:absolute; inset:-6px;
-    background:rgba(66,133,244,0.15); border-radius:50%;
-    animation:pulse 2s ease-out infinite;
-  }
-  @keyframes pulse { 0%{transform:scale(0.8);opacity:1} 100%{transform:scale(2);opacity:0} }
-
-  /* Cuisine cards */
-  .cuisine-grid { display:flex; flex-wrap:wrap; gap:8px; }
-  .cuisine-tag { padding:6px 14px; border-radius:20px; font-size:13px; font-weight:500; background:var(--cream); border:1px solid var(--border); color:var(--ink); display:flex; align-items:center; gap:6px; }
-  .cuisine-tag .cuisine-count { background:var(--rust); color:white; border-radius:10px; padding:1px 7px; font-size:11px; }
-
-  /* Google Autocomplete dropdown styling */
-  .pac-container { border-radius:10px; border:1px solid var(--border); box-shadow:0 4px 16px rgba(0,0,0,0.12); font-family:'DM Sans',sans-serif; margin-top:4px; }
+  /* Google autocomplete */
+  .pac-container { border-radius:12px; border:1px solid var(--border); box-shadow:0 6px 20px rgba(0,0,0,0.1); font-family:'DM Sans',sans-serif; margin-top:4px; }
   .pac-item { padding:8px 14px; font-size:13px; cursor:pointer; }
   .pac-item:hover { background:var(--cream); }
   .pac-item-query { font-size:13px; color:var(--ink); }
@@ -306,22 +237,13 @@
 <div class="auth-screen" id="auth-screen">
   <div class="auth-box">
     <div class="auth-logo">🍴 Mapp<span>etite</span></div>
-    <div class="auth-tagline">Your personal restaurant journal on a map</div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign in</button>
-      <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Create account</button>
-    </div>
+    <div class="auth-tagline">Your personal restaurant journal.<br>Every meal, every city, on the map.</div>
     <div class="auth-error" id="auth-error"></div>
-    <input type="email" class="auth-input" id="auth-email" placeholder="Your email address" onkeydown="if(event.key==='Enter')submitAuth()">
-    <input type="password" class="auth-input" id="auth-password" placeholder="Password" onkeydown="if(event.key==='Enter')submitAuth()">
-    <input type="password" class="auth-input" id="auth-password2" placeholder="Confirm password" style="display:none" onkeydown="if(event.key==='Enter')submitAuth()">
-    <button class="auth-btn" id="auth-submit-btn" onclick="submitAuth()">Sign in</button>
-    <div class="auth-divider">or</div>
     <button class="auth-google-btn" onclick="signInWithGoogle()">
-      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-3.59-13.46-8.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-3.59-13.46-8.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
       Continue with Google
     </button>
-    <div class="auth-success" id="auth-success"></div>
+    <div class="auth-note">By signing in you agree to keep your food memories safe 🍽️</div>
   </div>
 </div>
 
@@ -332,13 +254,11 @@
     <button class="nav-tab" onclick="showView('journal')">📓 Journal</button>
     <button class="nav-tab" onclick="showView('stats')">📊 Stats</button>
   </div>
-  <div style="display:flex;align-items:center;gap:12px">
-    <div class="user-menu-wrap">
-      <div class="avatar" id="user-avatar" onclick="toggleUserMenu()" style="cursor:pointer">?</div>
-      <div class="user-menu" id="user-menu">
-        <div class="user-menu-email" id="user-menu-email"></div>
-        <div class="user-menu-item danger" onclick="signOut()">🚪 Sign out</div>
-      </div>
+  <div class="user-menu-wrap">
+    <div class="avatar" id="user-avatar" onclick="toggleUserMenu()">?</div>
+    <div class="user-menu" id="user-menu">
+      <div class="user-menu-email" id="user-menu-email"></div>
+      <div class="user-menu-item danger" onclick="signOut()">🚪 Sign out</div>
     </div>
   </div>
 </nav>
@@ -349,14 +269,14 @@
     <div class="sidebar-header">
       <div class="sidebar-title">My Places</div>
       <div class="search-box">
-        <span style="color:#999;font-size:14px">🔍</span>
+        <span style="color:#bbb;font-size:13px">🔍</span>
         <input type="text" placeholder="Search my logged places..." oninput="searchCards(this.value)">
       </div>
       <div class="filter-row">
         <div class="filter-chip active" onclick="filterCards(this,'all')">All</div>
         <div class="filter-chip" onclick="filterCards(this,'loved')">❤️ Loved</div>
-        <div class="filter-chip" onclick="filterCards(this,'wishlist')">📌 Wishlist</div>
         <div class="filter-chip" onclick="filterCards(this,'liked')">👍 Good</div>
+        <div class="filter-chip" onclick="filterCards(this,'wishlist')">📌 Wishlist</div>
       </div>
     </div>
     <div class="restaurant-list" id="restaurant-list">
@@ -364,35 +284,35 @@
     </div>
   </div>
 
-  <div class="map-area" id="map-area">
+  <div class="map-area">
     <div id="google-map"></div>
-
-    <!-- City search bar with autocomplete -->
     <div class="map-search">
       <input type="text" id="city-search" placeholder="Search any city or restaurant...">
-      <button class="locate-btn" onclick="goToMyLocation()" title="My location">📍</button>
+      <button class="locate-btn" onclick="goToMyLocation()" title="My location">
+        <!-- Mannequin / person SVG -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="4" r="2.5" fill="#C4541A"/>
+          <path d="M12 8c-2.5 0-4 1.5-4 3v4h2.5v6h3V15H16v-4c0-1.5-1.5-3-4-3z" fill="#C4541A"/>
+        </svg>
+      </button>
     </div>
-
     <div class="map-stats">
       <div class="stat-item"><div class="stat-num" id="stat-visited">0</div><div class="stat-label">Visited</div></div>
       <div class="stat-item"><div class="stat-num" id="stat-wishlist">0</div><div class="stat-label">Wishlist</div></div>
       <div class="stat-item"><div class="stat-num" id="stat-cities">0</div><div class="stat-label">Cities</div></div>
     </div>
-
     <div class="map-legend">
       <div class="legend-title">My Ratings</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#888;border:1.5px solid #ccc"></div> Not visited yet</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#E8620A"></div> On wishlist</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ccc;border:1.5px solid #ddd"></div> Not visited</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#E8620A"></div> Wishlist</div>
       <div class="legend-item"><div class="legend-dot" style="background:#F39C12"></div> Good</div>
       <div class="legend-item"><div class="legend-dot" style="background:#2ECC71"></div> Loved it</div>
     </div>
-
-    <!-- Place detail panel -->
     <div class="place-panel" id="place-panel">
       <div class="panel-handle"></div>
       <button class="panel-close" onclick="closePanel()">✕</button>
       <div class="panel-body">
-        <div class="panel-name" id="panel-name">Restaurant Name</div>
+        <div class="panel-name" id="panel-name"></div>
         <div class="panel-meta" id="panel-meta"></div>
         <div class="panel-google-rating" id="panel-rating"></div>
         <div class="panel-logged" id="panel-logged" style="display:none"></div>
@@ -405,41 +325,41 @@
 
 <!-- JOURNAL VIEW -->
 <div class="journal-view" id="view-journal">
-  <div style="max-width:720px;margin:0 auto;width:100%;">
-    <div style="font-family:'Playfair Display',serif;font-size:28px;margin-bottom:6px;">My Food Journal</div>
-    <div style="font-size:14px;color:#888;margin-bottom:24px;" id="journal-subtitle"></div>
-    <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">
+  <div style="max-width:700px;margin:0 auto;width:100%;">
+    <div class="page-title">My Food Journal</div>
+    <div class="page-sub" id="journal-subtitle"></div>
+    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
       <div class="filter-chip active" onclick="filterJournal(this,'all')">All</div>
       <div class="filter-chip" onclick="filterJournal(this,'loved')">❤️ Loved</div>
       <div class="filter-chip" onclick="filterJournal(this,'liked')">👍 Good</div>
       <div class="filter-chip" onclick="filterJournal(this,'meh')">😐 Meh</div>
     </div>
-    <div id="journal-entries" style="display:grid;gap:14px;"></div>
+    <div id="journal-entries" style="display:grid;gap:12px;"></div>
   </div>
 </div>
 
 <!-- STATS VIEW -->
 <div class="stats-view" id="view-stats">
-  <div style="max-width:760px;margin:0 auto;">
-    <div style="font-family:'Playfair Display',serif;font-size:28px;margin-bottom:6px;">My Food Stats</div>
-    <div style="font-size:14px;color:#888;margin-bottom:28px;">Your culinary journey at a glance</div>
+  <div style="max-width:720px;margin:0 auto;">
+    <div class="page-title">My Food Stats</div>
+    <div class="page-sub">Your culinary journey at a glance</div>
     <div class="stats-grid">
-      <div class="big-stat"><div class="big-num" id="s-visited">0</div><div class="big-label">Restaurants visited</div></div>
-      <div class="big-stat"><div class="big-num" id="s-cities">0</div><div class="big-label">Cities explored</div></div>
-      <div class="big-stat"><div class="big-num" id="s-avg">—</div><div class="big-label">Average rating</div></div>
+      <div class="big-stat"><div class="big-num" id="s-visited">0</div><div class="big-label">Visited</div></div>
+      <div class="big-stat"><div class="big-num" id="s-cities">0</div><div class="big-label">Cities</div></div>
+      <div class="big-stat"><div class="big-num" id="s-avg">—</div><div class="big-label">Avg rating</div></div>
     </div>
     <div class="wishlist-banner">
       <div class="wishlist-text"><h3>Still on your wishlist</h3><p id="s-wishlist-text">0 restaurants waiting</p></div>
       <div class="wishlist-num" id="s-wishlist">0</div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
       <div class="chart-card"><div class="chart-title">Top Cuisines</div><div id="cuisine-bars" class="cuisine-grid"></div></div>
       <div class="chart-card">
-        <div class="chart-title">Ratings breakdown</div>
+        <div class="chart-title">Ratings</div>
         <div class="bar-row"><div class="bar-label">❤️ Loved</div><div class="bar-track"><div class="bar-fill sage" id="bar-loved" style="width:0%"></div></div><div class="bar-count" id="count-loved">0</div></div>
         <div class="bar-row"><div class="bar-label">👍 Good</div><div class="bar-track"><div class="bar-fill gold" id="bar-liked" style="width:0%"></div></div><div class="bar-count" id="count-liked">0</div></div>
-        <div class="bar-row"><div class="bar-label">😐 Meh</div><div class="bar-track"><div class="bar-fill" id="bar-meh" style="width:0%;background:#aaa"></div></div><div class="bar-count" id="count-meh">0</div></div>
-        <div class="bar-row"><div class="bar-label">📌 Wishlist</div><div class="bar-track"><div class="bar-fill" id="bar-wishlist" style="width:0%;background:var(--rust)"></div></div><div class="bar-count" id="count-wishlist">0</div></div>
+        <div class="bar-row"><div class="bar-label">😐 Meh</div><div class="bar-track"><div class="bar-fill" id="bar-meh" style="width:0%;background:#ccc"></div></div><div class="bar-count" id="count-meh">0</div></div>
+        <div class="bar-row"><div class="bar-label">📌 Wishlist</div><div class="bar-track"><div class="bar-fill" id="bar-wishlist" style="width:0%;background:var(--wish)"></div></div><div class="bar-count" id="count-wishlist">0</div></div>
       </div>
     </div>
   </div>
@@ -460,11 +380,11 @@
         <label class="form-label">How was it?</label>
         <div class="star-rating-block">
           <div class="star-row-big">
-            <button class="star-big" data-val="1" onclick="setStar(1)">★</button>
-            <button class="star-big" data-val="2" onclick="setStar(2)">★</button>
-            <button class="star-big" data-val="3" onclick="setStar(3)">★</button>
-            <button class="star-big" data-val="4" onclick="setStar(4)">★</button>
-            <button class="star-big" data-val="5" onclick="setStar(5)">★</button>
+            <button class="star-big" onclick="setStar(1)">★</button>
+            <button class="star-big" onclick="setStar(2)">★</button>
+            <button class="star-big" onclick="setStar(3)">★</button>
+            <button class="star-big" onclick="setStar(4)">★</button>
+            <button class="star-big" onclick="setStar(5)">★</button>
           </div>
           <div class="star-label" id="star-label">Tap a star to rate</div>
           <div class="star-badges">
@@ -473,7 +393,7 @@
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Cuisine type <span style="font-weight:400;color:#aaa">(auto-detected or fill in yourself)</span></label>
+        <label class="form-label">Cuisine <span style="font-weight:400;color:#ccc;text-transform:none;letter-spacing:0">(auto-detected or fill in yourself)</span></label>
         <input type="text" class="form-input" id="f-cuisine" placeholder="e.g. Italian, Japanese, Belgian...">
       </div>
       <div class="form-group">
@@ -485,11 +405,8 @@
         <input type="date" class="form-input" id="f-date">
       </div>
       <div class="form-group">
-        <label class="form-label">Photos <span style="font-weight:400;color:#aaa">(optional)</span></label>
-        <div class="photo-upload-area" id="upload-area"
-          ondragover="event.preventDefault();this.classList.add('drag-over')"
-          ondragleave="this.classList.remove('drag-over')"
-          ondrop="handleDrop(event)">
+        <label class="form-label">Photos <span style="font-weight:400;color:#ccc;text-transform:none;letter-spacing:0">(optional)</span></label>
+        <div class="photo-upload-area" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleDrop(event)">
           <input type="file" accept="image/*" multiple onchange="handleFiles(this.files)">
           <div class="upload-icon">📷</div>
           <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop</div>
@@ -508,137 +425,39 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── SUPABASE ──
 const SUPABASE_URL = 'https://zhtnyacrxcweklmmfwas.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpodG55YWNyeGN3ZWtsbW1md2FzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3ODE3NjQsImV4cCI6MjA5NDM1Nzc2NH0.FXMwpZKNBrXup-vcPAGDe6JJGfdq3iXyEzvNvMgaAEI';
 const API = `${SUPABASE_URL}/rest/v1/restaurants`;
 
-let currentUser = null;
-let authToken = null;
+let currentUser = null, authToken = null;
 
 function getHeaders() {
-  return {
-    'Content-Type': 'application/json',
-    'apikey': SUPABASE_KEY,
-    'Authorization': `Bearer ${authToken || SUPABASE_KEY}`,
-    'Prefer': 'return=representation'
-  };
+  return { 'Content-Type':'application/json', 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${authToken||SUPABASE_KEY}`, 'Prefer':'return=representation' };
 }
 
 // ── AUTH ──
-let authMode = 'login';
-
-function switchAuthTab(mode) {
-  authMode = mode;
-  document.getElementById('tab-login').classList.toggle('active', mode==='login');
-  document.getElementById('tab-signup').classList.toggle('active', mode==='signup');
-  document.getElementById('auth-submit-btn').textContent = mode==='login' ? 'Sign in' : 'Create account';
-  document.getElementById('auth-password2').style.display = mode==='signup' ? 'block' : 'none';
-  document.getElementById('auth-error').textContent = '';
-  document.getElementById('auth-success').textContent = '';
-}
-
-async function submitAuth() {
-  const email = document.getElementById('auth-email').value.trim();
-  const password = document.getElementById('auth-password').value;
-  const password2 = document.getElementById('auth-password2').value;
-  const errEl = document.getElementById('auth-error');
-  const successEl = document.getElementById('auth-success');
-  const btn = document.getElementById('auth-submit-btn');
-
-  errEl.textContent = ''; successEl.textContent = '';
-  if(!email || !password) { errEl.textContent = 'Please fill in all fields.'; return; }
-  if(authMode==='signup' && password !== password2) { errEl.textContent = 'Passwords do not match.'; return; }
-  if(password.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; return; }
-
-  btn.disabled = true;
-  btn.textContent = authMode==='login' ? 'Signing in...' : 'Creating account...';
-
-  const endpoint = authMode==='login'
-    ? `${SUPABASE_URL}/auth/v1/token?grant_type=password`
-    : `${SUPABASE_URL}/auth/v1/signup`;
-
-  try {
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_KEY },
-      body: JSON.stringify({ email, password })
-    });
-    const data = await res.json();
-
-    if(!res.ok) {
-      errEl.textContent = data.error_description || data.msg || 'Something went wrong.';
-      btn.disabled=false; btn.textContent = authMode==='login'?'Sign in':'Create account';
-      return;
-    }
-
-    if(authMode==='signup' && !data.access_token) {
-      successEl.textContent = '✅ Check your email to confirm your account, then sign in!';
-      btn.disabled=false; btn.textContent='Create account';
-      return;
-    }
-
-    onSignedIn(data);
-  } catch(e) {
-    errEl.textContent = 'Connection error — please try again.';
-    btn.disabled=false; btn.textContent = authMode==='login'?'Sign in':'Create account';
-  }
-}
-
 async function signInWithGoogle() {
-  window.location.href = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.href)}`;
+  window.location.href = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin + window.location.pathname)}`;
 }
 
 async function signOut() {
-  try {
-    await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
-      method:'POST',
-      headers:{ 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${authToken}` }
-    });
-  } catch(e) {}
+  try { await fetch(`${SUPABASE_URL}/auth/v1/logout`, { method:'POST', headers:{ 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${authToken}` } }); } catch(e) {}
   currentUser = null; authToken = null;
   localStorage.removeItem('mappetite_session');
   toggleUserMenu(false);
-  showAuthScreen();
+  document.getElementById('auth-screen').classList.remove('hidden');
 }
 
 function onSignedIn(session) {
   currentUser = session.user;
   authToken = session.access_token;
   localStorage.setItem('mappetite_session', JSON.stringify({ access_token: session.access_token, user: session.user }));
-  showApp();
-}
-
-function showAuthScreen() {
-  document.getElementById('auth-screen').classList.remove('hidden');
-  document.getElementById('auth-email').value='';
-  document.getElementById('auth-password').value='';
-  document.getElementById('auth-password2').value='';
-  document.getElementById('auth-error').textContent='';
-  document.getElementById('auth-success').textContent='';
-  document.getElementById('auth-submit-btn').disabled=false;
-  document.getElementById('auth-submit-btn').textContent='Sign in';
-  switchAuthTab('login');
-}
-
-function showApp() {
   document.getElementById('auth-screen').classList.add('hidden');
   const email = currentUser?.email || '';
-  const initials = email.substring(0,2).toUpperCase();
-  document.getElementById('user-avatar').textContent = initials;
+  document.getElementById('user-avatar').textContent = email.substring(0,2).toUpperCase();
   document.getElementById('user-menu-email').textContent = email;
-  if(map) { loadMyLogs(); }
+  if(map) loadMyLogs();
 }
-
-function toggleUserMenu(force) {
-  const menu = document.getElementById('user-menu');
-  const open = force !== undefined ? force : !menu.classList.contains('open');
-  menu.classList.toggle('open', open);
-}
-
-document.addEventListener('click', e => {
-  if(!e.target.closest('.user-menu-wrap')) toggleUserMenu(false);
-});
 
 async function checkSession() {
   const hash = window.location.hash;
@@ -647,370 +466,253 @@ async function checkSession() {
     const access_token = params.get('access_token');
     if(access_token) {
       try {
-        const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-          headers:{ 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${access_token}` }
-        });
+        const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, { headers:{ 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${access_token}` } });
         const user = await res.json();
         window.history.replaceState(null, '', window.location.pathname);
-        onSignedIn({ access_token, user });
-        return;
+        onSignedIn({ access_token, user }); return;
       } catch(e) {}
     }
   }
-
   const stored = localStorage.getItem('mappetite_session');
   if(stored) {
     try {
       const session = JSON.parse(stored);
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-        headers:{ 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${session.access_token}` }
-      });
-      if(res.ok) {
-        onSignedIn(session);
-        return;
-      }
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, { headers:{ 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${session.access_token}` } });
+      if(res.ok) { onSignedIn(session); return; }
     } catch(e) {}
     localStorage.removeItem('mappetite_session');
   }
-
-  showAuthScreen();
+  // Show auth screen
+  document.getElementById('auth-screen').classList.remove('hidden');
 }
 
-// ── STATE ──
-let myLogs = [];
-let map, placesService, infoWindow, clusterer;
-let myLogMarkers = [];
-let nearbyMarkers = [];
-let selectedPlace = null;
-let locationMarker = null;
+function toggleUserMenu(force) {
+  const menu = document.getElementById('user-menu');
+  const open = force !== undefined ? force : !menu.classList.contains('open');
+  menu.classList.toggle('open', open);
+}
+document.addEventListener('click', e => { if(!e.target.closest('.user-menu-wrap')) toggleUserMenu(false); });
 
-const statusColors = { loved:'#2ECC71', liked:'#F39C12', meh:'#999999', wishlist:'#E8620A' };
+// ── STATE ──
+let myLogs=[], map, placesService, infoWindow, clusterer;
+let myLogMarkers=[], nearbyMarkers=[], selectedPlace=null, locationMarker=null;
+let uploadedPhotos=[], currentRating='loved', starVal=0;
+
+const statusColors = { loved:'#2ECC71', liked:'#F39C12', meh:'#999', wishlist:'#E8620A' };
 const statusEmoji  = { loved:'❤️', liked:'👍', meh:'😐', wishlist:'📌' };
 const statusLabel  = { loved:'LOVED IT', liked:'GOOD', meh:'MEH', wishlist:'WISHLIST' };
-const statusColorV = { loved:'#27AE60', liked:'#E67E22', meh:'#aaa', wishlist:'#E8620A' };
-
-let uploadedPhotos = [], currentRating = 'loved', starVal = 0;
-
-// Star → status mapping
+const statusColorV = { loved:'#27AE60', liked:'#E67E22', meh:'#999', wishlist:'#E8620A' };
 const starToStatus = { 1:'meh', 2:'meh', 3:'liked', 4:'liked', 5:'loved' };
 const starToLabel  = { 1:'😐 Not great', 2:'😐 It was okay', 3:'👍 Pretty good', 4:'👍 Really good', 5:'❤️ Loved it!' };
 const starToColor  = { 1:'meh', 2:'meh', 3:'liked', 4:'liked', 5:'loved' };
 
-// ── SUPABASE HELPERS ──
+// ── SUPABASE ──
 async function loadMyLogs() {
   if(!currentUser) return;
   try {
-    const res = await fetch(`${API}?user_id=eq.${currentUser.id}&order=created_at.desc`, { headers: getHeaders() });
+    const res = await fetch(`${API}?user_id=eq.${currentUser.id}&order=created_at.desc`, { headers:getHeaders() });
     if(!res.ok) throw new Error();
     myLogs = (await res.json()).map(r=>({...r, photos:r.photos||[]}));
-    renderSidebar();
-    renderMyLogMarkers();
-    updateStats();
+    renderSidebar(); renderMyLogMarkers(); updateStats();
   } catch(e) {
     showToast('⚠️ Could not load your data', true);
-    document.getElementById('restaurant-list').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>Could not connect.<br>Check your connection.</p></div>`;
+    document.getElementById('restaurant-list').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>Could not connect.</p></div>`;
   }
 }
 
-async function saveLog(entry) {
-  const res = await fetch(API, { method:'POST', headers:getHeaders(), body:JSON.stringify({...entry, user_id: currentUser.id}) });
-  if(!res.ok) throw new Error('Save failed');
-  return (await res.json())[0];
-}
-
-async function updateLog(id, entry) {
-  const res = await fetch(`${API}?id=eq.${id}&user_id=eq.${currentUser.id}`, { method:'PATCH', headers:getHeaders(), body:JSON.stringify(entry) });
-  if(!res.ok) throw new Error('Update failed');
-  return (await res.json())[0];
-}
-
-// ── MAP INIT ──
+// ── MAP ──
 function initMap() {
   map = new google.maps.Map(document.getElementById('google-map'), {
     center:{lat:51.05,lng:4.4}, zoom:14,
     mapTypeControl:false, streetViewControl:false, fullscreenControl:false,
     styles:[
       {elementType:'geometry',stylers:[{color:'#f5f0e8'}]},
-      {featureType:'water',elementType:'geometry',stylers:[{color:'#c9d8e8'}]},
-      {featureType:'road',elementType:'geometry',stylers:[{color:'#ffffff'}]},
+      {featureType:'water',stylers:[{color:'#c9d8e8'}]},
+      {featureType:'road',elementType:'geometry',stylers:[{color:'#fff'}]},
       {featureType:'road.arterial',elementType:'geometry',stylers:[{color:'#ede8e0'}]},
       {featureType:'landscape',elementType:'geometry',stylers:[{color:'#f0ebe2'}]},
       {featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]},
       {featureType:'transit',stylers:[{visibility:'off'}]},
     ]
   });
-
   placesService = new google.maps.places.PlacesService(map);
   infoWindow = new google.maps.InfoWindow();
-
   initAutocomplete();
   goToMyLocation();
-
   let idleTimer;
-  map.addListener('idle', ()=>{
-    clearTimeout(idleTimer);
-    idleTimer = setTimeout(()=>searchNearbyRestaurants(), 600);
-  });
-
+  map.addListener('idle', ()=>{ clearTimeout(idleTimer); idleTimer=setTimeout(searchNearbyRestaurants,600); });
   map.addListener('click', ()=>closePanel());
-
   if(currentUser) loadMyLogs();
 }
 
-// ── GEOLOCATION ──
+// ── LOCATION MANNEQUIN ──
 function goToMyLocation() {
-  if(!navigator.geolocation) { showToast('⚠️ Location not supported by your browser', true); return; }
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      const loc = {lat:pos.coords.latitude, lng:pos.coords.longitude};
-      map.setCenter(loc);
-      map.setZoom(15);
-      placeLocationDot(loc);
-    },
-    () => showToast('📍 Could not get your location', true)
-  );
+  if(!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(pos => {
+    const loc = {lat:pos.coords.latitude, lng:pos.coords.longitude};
+    map.setCenter(loc); map.setZoom(15);
+    placeLocationDot(loc);
+  }, ()=>showToast('📍 Could not get your location', true));
 }
 
 function placeLocationDot(loc) {
   if(locationMarker) locationMarker.setMap(null);
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="10" fill="rgba(66,133,244,0.2)" stroke="none"/>
-    <circle cx="12" cy="12" r="6" fill="#4285F4" stroke="white" stroke-width="2.5"/>
+  // Mannequin/person SVG in rust color with pulsing halo
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
+    <circle cx="18" cy="18" r="17" fill="rgba(196,84,26,0.15)" stroke="none"/>
+    <circle cx="18" cy="18" r="11" fill="white" stroke="#C4541A" stroke-width="2"/>
+    <circle cx="18" cy="13" r="3" fill="#C4541A"/>
+    <path d="M18 17c-3 0-4.5 1.8-4.5 3.5V25h3V30h3V25h3v-4.5C22.5 18.8 21 17 18 17z" fill="#C4541A"/>
   </svg>`;
   locationMarker = new google.maps.Marker({
-    position: loc, map,
-    icon:{ url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg), scaledSize:new google.maps.Size(24,24), anchor:new google.maps.Point(12,12) },
-    title:'You are here', zIndex:20,
-    optimized:false
+    position:loc, map,
+    icon:{ url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg), scaledSize:new google.maps.Size(36,36), anchor:new google.maps.Point(18,18) },
+    title:'You are here', zIndex:20, optimized:false
   });
-  if(navigator.geolocation) {
-    navigator.geolocation.watchPosition(p => {
-      const l = {lat:p.coords.latitude, lng:p.coords.longitude};
-      if(locationMarker) locationMarker.setPosition(l);
-    }, null, {enableHighAccuracy:true, maximumAge:10000});
-  }
+  navigator.geolocation.watchPosition(p => {
+    const l={lat:p.coords.latitude, lng:p.coords.longitude};
+    if(locationMarker) locationMarker.setPosition(l);
+  }, null, {enableHighAccuracy:true, maximumAge:10000});
 }
 
-// ── PLACES AUTOCOMPLETE ──
+// ── AUTOCOMPLETE ──
 function initAutocomplete() {
   const input = document.getElementById('city-search');
-  const autocomplete = new google.maps.places.Autocomplete(input, {
-    types: ['establishment', 'geocode'],
-  });
-  autocomplete.bindTo('bounds', map);
-  autocomplete.addListener('place_changed', () => {
-    const place = autocomplete.getPlace();
-    if(!place.geometry||!place.geometry.location) {
-      showToast('⚠️ Place not found — try a different search', true);
-      return;
-    }
-    if(place.geometry.viewport) {
-      map.fitBounds(place.geometry.viewport);
-    } else {
-      map.setCenter(place.geometry.location);
-      map.setZoom(15);
-    }
-    if(place.types&&(place.types.includes('restaurant')||place.types.includes('food'))) {
-      openPlacePanel(place, null);
-    }
+  const ac = new google.maps.places.Autocomplete(input, { types:['establishment','geocode'] });
+  ac.bindTo('bounds', map);
+  ac.addListener('place_changed', ()=>{
+    const place = ac.getPlace();
+    if(!place.geometry||!place.geometry.location) { showToast('⚠️ Place not found', true); return; }
+    if(place.geometry.viewport) map.fitBounds(place.geometry.viewport);
+    else { map.setCenter(place.geometry.location); map.setZoom(15); }
+    if(place.types&&(place.types.includes('restaurant')||place.types.includes('food'))) openPlacePanel(place, null);
   });
 }
 
 // ── NEARBY RESTAURANTS ──
-const EXCLUDED_TYPES = new Set([
-  'meal_takeaway','meal_delivery','fast_food','bakery',
-  'cafe','bar','night_club','liquor_store','convenience_store',
-  'grocery_or_supermarket','supermarket','food','sandwich_shop'
-]);
+const EXCLUDED = new Set(['meal_takeaway','meal_delivery','fast_food','bakery','cafe','bar','night_club','liquor_store','convenience_store','grocery_or_supermarket','supermarket','sandwich_shop']);
+const FAST_FOOD = /\b(mcdonalds|mcdonald's|burger king|kfc|quick|subway|domino|pizza hut|taco bell|five guys|pita pit|exki|lunch garden)\b/i;
 
 function searchNearbyRestaurants() {
   if(!placesService) return;
-  nearbyMarkers.forEach(m=>m.setMap(null));
-  nearbyMarkers = [];
-
-  const center = map.getCenter();
-  const zoom = map.getZoom();
-  if(zoom < 12) return;
-
-  const radius = zoom >= 15 ? 800 : zoom >= 13 ? 2000 : 4000;
-
+  nearbyMarkers.forEach(m=>m.setMap(null)); nearbyMarkers=[];
+  const zoom=map.getZoom();
+  if(zoom<12) return;
   placesService.nearbySearch({
-    location: center,
-    radius,
-    type: 'restaurant',
-    keyword: 'restaurant'
-  }, (results, status) => {
-    if(status !== google.maps.places.PlacesServiceStatus.OK || !results) return;
-    results.forEach(place => {
+    location:map.getCenter(), radius:zoom>=15?800:zoom>=13?2000:4000,
+    type:'restaurant', keyword:'restaurant'
+  }, (results,status)=>{
+    if(status!==google.maps.places.PlacesServiceStatus.OK||!results) return;
+    results.forEach(place=>{
       if(myLogs.find(l=>l.place_id===place.place_id)) return;
-      const types = place.types || [];
-      const isExcluded = types.some(t => EXCLUDED_TYPES.has(t));
-      const hasRestaurant = types.includes('restaurant');
-      if(isExcluded && !hasRestaurant) return;
-      const fastFoodNames = /\b(mcdonalds|mcdonald's|burger king|kfc|quick|subway|domino|pizza hut|taco bell|wendy|five guys|pita pit|exki|lunch garden)\b/i;
-      if(fastFoodNames.test(place.name)) return;
+      const types=place.types||[];
+      if(EXCLUDED.has(types[0])&&!types.includes('restaurant')) return;
+      if(FAST_FOOD.test(place.name)) return;
       addNearbyMarker(place);
     });
   });
 }
 
 function addNearbyMarker(place) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
-    <circle cx="10" cy="10" r="8" fill="#888" stroke="white" stroke-width="2" opacity="0.7"/>
-  </svg>`;
-  const marker = new google.maps.Marker({
-    position: place.geometry.location,
-    map,
-    icon:{ url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg), scaledSize:new google.maps.Size(20,20), anchor:new google.maps.Point(10,10) },
-    title: place.name,
-    zIndex: 1
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7" fill="#aaa" stroke="white" stroke-width="2"/></svg>`;
+  const marker=new google.maps.Marker({
+    position:place.geometry.location, map,
+    icon:{url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg),scaledSize:new google.maps.Size(18,18),anchor:new google.maps.Point(9,9)},
+    title:place.name, zIndex:1
   });
-  marker.addListener('click', ()=>openPlacePanel(place, marker));
+  marker.addListener('click',()=>openPlacePanel(place,marker));
   nearbyMarkers.push(marker);
 }
 
 // ── MY LOG MARKERS ──
 function renderMyLogMarkers() {
   if(clusterer) clusterer.clearMarkers();
-  myLogMarkers.forEach(m=>m.setMap(null));
-  myLogMarkers = [];
-
+  myLogMarkers.forEach(m=>m.setMap(null)); myLogMarkers=[];
   myLogs.forEach(r=>{
     if(!r.lat||!r.lng) return;
-    const color = statusColors[r.status];
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="34" height="42" viewBox="0 0 34 42">
-      <path d="M17 1C8.16 1 1 8.16 1 17c0 11 16 24 16 24s16-13 16-24C33 8.16 25.84 1 17 1z" fill="${color}" stroke="white" stroke-width="2"/>
-      <circle cx="17" cy="17" r="7" fill="white" opacity="0.95"/>
+    const color=statusColors[r.status];
+    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
+      <path d="M16 1C7.72 1 1 7.72 1 16c0 10.5 15 23 15 23s15-12.5 15-23C31 7.72 24.28 1 16 1z" fill="${color}" stroke="white" stroke-width="2"/>
+      <circle cx="16" cy="16" r="6" fill="white" opacity="0.95"/>
     </svg>`;
-    const marker = new google.maps.Marker({
+    const marker=new google.maps.Marker({
       position:{lat:r.lat,lng:r.lng}, map,
-      icon:{ url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg), scaledSize:new google.maps.Size(34,42), anchor:new google.maps.Point(17,42) },
+      icon:{url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg),scaledSize:new google.maps.Size(32,40),anchor:new google.maps.Point(16,40)},
       title:r.name, zIndex:10
     });
-    marker.addListener('click', ()=>openLoggedPanel(r, marker));
+    marker.addListener('click',()=>openLoggedPanel(r,marker));
     myLogMarkers.push(marker);
   });
-
-  clusterer = new markerClusterer.MarkerClusterer({
-    map, markers: myLogMarkers,
-    renderer:{
-      render({count,position}){
-        const size=count<5?40:count<15?50:60, fs=count<5?13:15;
-        const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-          <circle cx="${size/2}" cy="${size/2}" r="${size/2-2}" fill="#1A1208" opacity="0.88"/>
-          <circle cx="${size/2}" cy="${size/2}" r="${size/2-6}" fill="#C4541A"/>
-          <text x="${size/2}" y="${size/2+1}" text-anchor="middle" dominant-baseline="middle"
-            font-family="DM Sans,sans-serif" font-size="${fs}" font-weight="600" fill="white">${count}</text>
-        </svg>`;
-        return new google.maps.Marker({ position, zIndex:1000+count,
-          icon:{ url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg), scaledSize:new google.maps.Size(size,size), anchor:new google.maps.Point(size/2,size/2) }
-        });
-      }
-    }
+  clusterer=new markerClusterer.MarkerClusterer({
+    map, markers:myLogMarkers,
+    renderer:{render({count,position}){
+      const size=count<5?38:count<15?48:58,fs=count<5?12:14;
+      const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+        <circle cx="${size/2}" cy="${size/2}" r="${size/2-1}" fill="#1A1208" opacity="0.85"/>
+        <circle cx="${size/2}" cy="${size/2}" r="${size/2-5}" fill="#C4541A"/>
+        <text x="${size/2}" y="${size/2+1}" text-anchor="middle" dominant-baseline="middle" font-family="DM Sans,sans-serif" font-size="${fs}" font-weight="700" fill="white">${count}</text>
+      </svg>`;
+      return new google.maps.Marker({position,zIndex:1000+count,icon:{url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg),scaledSize:new google.maps.Size(size,size),anchor:new google.maps.Point(size/2,size/2)}});
+    }}
   });
 }
 
 // ── PLACE PANEL ──
-function openPlacePanel(place, marker) {
-  selectedPlace = place;
-  const logged = myLogs.find(l=>l.place_id===place.place_id);
-
-  document.getElementById('panel-name').textContent = place.name;
-  document.getElementById('panel-meta').textContent =
-    (place.vicinity||'') + (place.price_level ? ' · ' + '€'.repeat(place.price_level) : '');
-
-  const ratingEl = document.getElementById('panel-rating');
-  if(place.rating) {
-    ratingEl.innerHTML = `<span class="panel-stars">${'★'.repeat(Math.round(place.rating))}${'☆'.repeat(5-Math.round(place.rating))}</span>
-      <span style="color:#666">${place.rating} on Google (${place.user_ratings_total||0} reviews)</span>`;
-  } else { ratingEl.innerHTML=''; }
-
-  const loggedEl = document.getElementById('panel-logged');
-  const logBtn = document.getElementById('panel-log-btn');
-  const wlBtn = document.getElementById('panel-wishlist-btn');
-
+function openPlacePanel(place,marker) {
+  selectedPlace=place;
+  const logged=myLogs.find(l=>l.place_id===place.place_id);
+  document.getElementById('panel-name').textContent=place.name;
+  document.getElementById('panel-meta').textContent=(place.vicinity||'')+(place.price_level?' · '+'€'.repeat(place.price_level):'');
+  const rEl=document.getElementById('panel-rating');
+  rEl.innerHTML=place.rating?`<span class="panel-stars">${'★'.repeat(Math.round(place.rating))}${'☆'.repeat(5-Math.round(place.rating))}</span><span style="color:#aaa;font-size:12px">${place.rating} on Google (${place.user_ratings_total||0} reviews)</span>`:'';
+  const logEl=document.getElementById('panel-logged');
+  const logBtn=document.getElementById('panel-log-btn');
+  const wlBtn=document.getElementById('panel-wishlist-btn');
   if(logged) {
-    loggedEl.style.display='block';
-    const stars = logged.rating?'★'.repeat(logged.rating)+'☆'.repeat(5-logged.rating):'';
-    loggedEl.innerHTML = `<div class="panel-logged-title">Your log ${statusEmoji[logged.status]} ${statusLabel[logged.status]}</div>
-      <div class="panel-logged-content">
-        ${stars?`<span style="color:var(--gold)">${stars}</span> &nbsp;`:''} ${logged.notes?`"${logged.notes}"`:'' }
-        ${logged.date?`<div style="font-size:11px;color:#aaa;margin-top:4px;">📅 ${fmtDate(logged.date)}</div>`:''}</div>`;
-    logBtn.textContent = '✏️ Edit my log';
-    wlBtn.style.display='none';
+    logEl.style.display='block';
+    const stars=logged.rating?'★'.repeat(logged.rating)+'☆'.repeat(5-logged.rating):'';
+    logEl.innerHTML=`<div class="panel-logged-title">${statusEmoji[logged.status]} ${statusLabel[logged.status]}</div>
+      <div class="panel-logged-content">${stars?`<span style="color:var(--gold)">${stars}</span> `:''}${logged.notes?`"${logged.notes}"`:''}</div>`;
+    logBtn.textContent='✏️ Edit my log'; wlBtn.style.display='none';
   } else {
-    loggedEl.style.display='none';
-    logBtn.textContent = '＋ Log my visit';
-    wlBtn.style.display='block';
+    logEl.style.display='none'; logBtn.textContent='＋ Log my visit'; wlBtn.style.display='block';
   }
-
   document.getElementById('place-panel').classList.add('open');
-
   document.querySelectorAll('.restaurant-card').forEach(c=>c.classList.remove('selected'));
   if(logged) {
-    const card = document.querySelector(`[data-id="${logged.id}"]`);
+    const card=document.querySelector(`[data-id="${logged.id}"]`);
     if(card){card.classList.add('selected');card.scrollIntoView({behavior:'smooth',block:'nearest'});}
   }
 }
 
-function openLoggedPanel(r, marker) {
-  const fakePlace = {
-    place_id: r.place_id,
-    name: r.name,
-    vicinity: `${r.city||''}${r.country?', '+r.country:''}`,
-    rating: null,
-    geometry: { location: { lat:()=>r.lat, lng:()=>r.lng } }
-  };
-  openPlacePanel(fakePlace, marker);
+function openLoggedPanel(r) {
+  openPlacePanel({place_id:r.place_id,name:r.name,vicinity:`${r.city||''}${r.country?', '+r.country:''}`,rating:null,geometry:{location:{lat:()=>r.lat,lng:()=>r.lng}}});
 }
 
-function closePanel() {
-  document.getElementById('place-panel').classList.remove('open');
-  selectedPlace = null;
-}
+function closePanel() { document.getElementById('place-panel').classList.remove('open'); selectedPlace=null; }
 
 async function quickWishlist() {
   if(!selectedPlace) return;
-  const place = selectedPlace;
-  const loc = place.geometry.location;
-  const entry = {
-    place_id: place.place_id || null,
-    name:     place.name,
-    city:     extractCity(place.vicinity),
-    country:  '',
-    cuisine:  'Restaurant',
-    status:   'wishlist',
-    rating:   null,
-    notes:    '',
-    date:     null,
-    photos:   [],
-    lat: typeof loc.lat==='function' ? loc.lat() : loc.lat,
-    lng: typeof loc.lng==='function' ? loc.lng() : loc.lng
-  };
+  const place=selectedPlace;
+  const loc=place.geometry.location;
+  const entry={place_id:place.place_id||null,name:place.name,city:extractCity(place.vicinity),country:'',cuisine:'',status:'wishlist',rating:null,notes:'',date:null,photos:[],lat:typeof loc.lat==='function'?loc.lat():loc.lat,lng:typeof loc.lng==='function'?loc.lng():loc.lng};
   try {
-    const res = await fetch(API, { method:'POST', headers:getHeaders(), body:JSON.stringify({...entry, user_id: currentUser.id}) });
-    if(!res.ok) throw new Error(await res.text());
-    const saved = (await res.json())[0];
-    myLogs.unshift(saved);
-    closePanel();
-    nearbyMarkers = nearbyMarkers.filter(m => {
-      if(m.getTitle()===place.name){ m.setMap(null); return false; }
-      return true;
-    });
+    const res=await fetch(API,{method:'POST',headers:getHeaders(),body:JSON.stringify({...entry,user_id:currentUser.id})});
+    if(!res.ok) throw new Error();
+    const saved=(await res.json())[0];
+    myLogs.unshift(saved); closePanel();
+    nearbyMarkers=nearbyMarkers.filter(m=>{if(m.getTitle()===place.name){m.setMap(null);return false;}return true;});
     renderSidebar(); renderMyLogMarkers(); updateStats();
-    showToast('📌 ' + place.name + ' added to wishlist!');
-  } catch(e) {
-    console.error(e);
-    showToast('❌ Could not save', true);
-  }
+    showToast('📌 '+place.name+' added to wishlist!');
+  } catch(e) { showToast('❌ Could not save',true); }
 }
 
 // ── LOG MODAL ──
 function openLogModal() {
   if(!selectedPlace) return;
   uploadedPhotos=[]; starVal=0; currentRating='loved';
-  document.getElementById('modal-restaurant-name').textContent = selectedPlace.name;
-  document.getElementById('modal-restaurant-addr').textContent = selectedPlace.vicinity||'';
+  document.getElementById('modal-restaurant-name').textContent=selectedPlace.name;
+  document.getElementById('modal-restaurant-addr').textContent=selectedPlace.vicinity||'';
   document.getElementById('f-notes').value='';
   document.getElementById('f-date').value='';
   document.getElementById('f-cuisine').value='';
@@ -1018,217 +720,142 @@ function openLogModal() {
   document.getElementById('star-label').textContent='Tap a star to rate';
   document.getElementById('star-label').className='star-label';
   document.getElementById('badge-wishlist').classList.remove('wishlist-active');
-
-  const skipTypes = new Set(['restaurant','food','point_of_interest','establishment','premise','subpremise','locality','political']);
-  const rawTypes = selectedPlace.types || [];
-  const cuisineType = rawTypes.find(t=>!skipTypes.has(t));
-  if(cuisineType) document.getElementById('f-cuisine').value = cuisineType.replace(/_/g,' ');
   document.getElementById('photo-previews').innerHTML='';
   document.getElementById('submit-btn').disabled=false;
   document.getElementById('submit-btn').textContent='Save to my journal ✓';
-
-  const existing = myLogs.find(l=>l.place_id===selectedPlace.place_id);
+  const skipTypes=new Set(['restaurant','food','point_of_interest','establishment','premise','subpremise','locality','political']);
+  const cuisineType=(selectedPlace.types||[]).find(t=>!skipTypes.has(t));
+  if(cuisineType) document.getElementById('f-cuisine').value=cuisineType.replace(/_/g,' ');
+  const existing=myLogs.find(l=>l.place_id===selectedPlace.place_id);
   if(existing) {
-    selectRating(existing.status);
-    if(existing.rating) setStar(existing.rating);
-    else if(existing.status==='wishlist') setWishlist();
+    if(existing.status==='wishlist') setWishlist();
+    else if(existing.rating) setStar(existing.rating);
     document.getElementById('f-notes').value=existing.notes||'';
     document.getElementById('f-date').value=existing.date||'';
     if(existing.cuisine) document.getElementById('f-cuisine').value=existing.cuisine;
   }
-
   document.getElementById('modal').classList.add('open');
 }
 
-function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+function closeModal(){document.getElementById('modal').classList.remove('open');}
 
-function setStar(n) {
-  starVal = n;
-  currentRating = starToStatus[n];
-  document.querySelectorAll('.star-big').forEach((s,i) => s.classList.toggle('filled', i < n));
-  const label = document.getElementById('star-label');
-  label.textContent = starToLabel[n];
-  label.className = 'star-label ' + starToColor[n];
+function setStar(n){
+  starVal=n; currentRating=starToStatus[n];
+  document.querySelectorAll('.star-big').forEach((s,i)=>s.classList.toggle('filled',i<n));
+  const lbl=document.getElementById('star-label');
+  lbl.textContent=starToLabel[n]; lbl.className='star-label '+starToColor[n];
   document.getElementById('badge-wishlist').classList.remove('wishlist-active');
 }
-
-function setWishlist() {
-  starVal = 0;
-  currentRating = 'wishlist';
-  document.querySelectorAll('.star-big').forEach(s => s.classList.remove('filled'));
-  const label = document.getElementById('star-label');
-  label.textContent = '📌 Saving to wishlist';
-  label.className = 'star-label';
+function setWishlist(){
+  starVal=0; currentRating='wishlist';
+  document.querySelectorAll('.star-big').forEach(s=>s.classList.remove('filled'));
+  const lbl=document.getElementById('star-label');
+  lbl.textContent='📌 Saving to wishlist'; lbl.className='star-label';
   document.getElementById('badge-wishlist').classList.add('wishlist-active');
 }
-
-function selectRating(type) {
-  currentRating = type;
-  if(type === 'loved') setStar(5);
-  else if(type === 'liked') setStar(3);
-  else if(type === 'meh') setStar(1);
-  else if(type === 'wishlist') setWishlist();
+function selectRating(type){
+  if(type==='loved') setStar(5);
+  else if(type==='liked') setStar(3);
+  else if(type==='meh') setStar(1);
+  else setWishlist();
 }
 
 async function submitLog() {
-  if(!selectedPlace) { showToast('⚠️ No restaurant selected', true); return; }
-
-  const place = selectedPlace;
-  const btn = document.getElementById('submit-btn');
+  if(!selectedPlace){showToast('⚠️ No restaurant selected',true);return;}
+  const place=selectedPlace;
+  const btn=document.getElementById('submit-btn');
   btn.disabled=true; btn.textContent='Saving...';
-
-  const loc = place.geometry.location;
-  const lat = typeof loc.lat==='function' ? loc.lat() : loc.lat;
-  const lng = typeof loc.lng==='function' ? loc.lng() : loc.lng;
-
-  const rawTypes = place.types || [];
-  const skipTypes = new Set(['restaurant','food','point_of_interest','establishment','premise','subpremise','locality','political']);
-  const cuisineType = rawTypes.find(t=>!skipTypes.has(t));
-  const autoDetected = cuisineType ? cuisineType.replace(/_/g,' ') : '';
-  const cuisine = (document.getElementById('f-cuisine').value.trim()) || autoDetected || 'Restaurant';
-
-  const entry = {
-    place_id:  place.place_id || null,
-    name:      place.name,
-    city:      extractCity(place.vicinity),
-    country:   '',
-    cuisine:   cuisine,
-    status:    currentRating,
-    rating:    starVal || null,
-    notes:     document.getElementById('f-notes').value.trim(),
-    date:      document.getElementById('f-date').value || null,
-    photos:    [...uploadedPhotos],
-    lat, lng
-  };
-
+  const loc=place.geometry.location;
+  const lat=typeof loc.lat==='function'?loc.lat():loc.lat;
+  const lng=typeof loc.lng==='function'?loc.lng():loc.lng;
+  const skipTypes=new Set(['restaurant','food','point_of_interest','establishment','premise','subpremise','locality','political']);
+  const cuisineType=(place.types||[]).find(t=>!skipTypes.has(t));
+  const cuisine=(document.getElementById('f-cuisine').value.trim())||(cuisineType?cuisineType.replace(/_/g,' '):'')||'';
+  const entry={place_id:place.place_id||null,name:place.name,city:extractCity(place.vicinity),country:'',cuisine,status:currentRating,rating:starVal||null,notes:document.getElementById('f-notes').value.trim(),date:document.getElementById('f-date').value||null,photos:[...uploadedPhotos],lat,lng};
   try {
-    const existing = myLogs.find(l => l.place_id && l.place_id === place.place_id);
+    const existing=myLogs.find(l=>l.place_id&&l.place_id===place.place_id);
     if(existing) {
-      const res = await fetch(`${API}?id=eq.${existing.id}&user_id=eq.${currentUser.id}`, {
-        method: 'PATCH',
-        headers: getHeaders(),
-        body: JSON.stringify(entry)
-      });
+      const res=await fetch(`${API}?id=eq.${existing.id}&user_id=eq.${currentUser.id}`,{method:'PATCH',headers:getHeaders(),body:JSON.stringify(entry)});
       if(!res.ok) throw new Error(await res.text());
-      myLogs = myLogs.map(l => l.id===existing.id ? {...l, ...entry} : l);
+      myLogs=myLogs.map(l=>l.id===existing.id?{...l,...entry}:l);
     } else {
-      const res = await fetch(API, {
-        method: 'POST',
-        headers: getHeaders(),
-        body: JSON.stringify({...entry, user_id: currentUser.id})
-      });
+      const res=await fetch(API,{method:'POST',headers:getHeaders(),body:JSON.stringify({...entry,user_id:currentUser.id})});
       if(!res.ok) throw new Error(await res.text());
-      const saved = (await res.json())[0];
+      const saved=(await res.json())[0];
       myLogs.unshift(saved);
-      nearbyMarkers = nearbyMarkers.filter(m => {
-        if(m.getTitle() === place.name) { m.setMap(null); return false; }
-        return true;
-      });
+      nearbyMarkers=nearbyMarkers.filter(m=>{if(m.getTitle()===place.name){m.setMap(null);return false;}return true;});
     }
-    closeModal();
-    closePanel();
-    renderSidebar();
-    renderMyLogMarkers();
-    updateStats();
-    showToast('✅ ' + place.name + ' saved!');
+    closeModal(); closePanel();
+    renderSidebar(); renderMyLogMarkers(); updateStats();
+    showToast('✅ '+place.name+' saved!');
   } catch(e) {
-    console.error('Save error:', e);
-    showToast('❌ Could not save — please try again', true);
-    btn.disabled=false;
-    btn.textContent='Save to my journal ✓';
+    console.error(e);
+    showToast('❌ Could not save — please try again',true);
+    btn.disabled=false; btn.textContent='Save to my journal ✓';
   }
 }
 
-function extractCity(vicinity) {
-  if(!vicinity) return '';
-  const parts = vicinity.split(',');
-  return parts[parts.length-1]?.trim()||parts[0]||'';
-}
+function extractCity(v){if(!v)return'';const p=v.split(',');return p[p.length-1]?.trim()||p[0]||'';}
 
 // ── SIDEBAR ──
-function renderSidebar() {
-  const visited  = myLogs.filter(r=>r.status!=='wishlist');
-  const wishlist = myLogs.filter(r=>r.status==='wishlist');
-  if(!myLogs.length) {
-    document.getElementById('restaurant-list').innerHTML=`<div class="empty-state"><div class="empty-icon">🍽️</div><p>Tap any restaurant on the map<br>to log a visit or add to wishlist.</p></div>`;
-    return;
-  }
+function renderSidebar(){
+  const visited=myLogs.filter(r=>r.status!=='wishlist');
+  const wishlist=myLogs.filter(r=>r.status==='wishlist');
+  if(!myLogs.length){document.getElementById('restaurant-list').innerHTML=`<div class="empty-state"><div class="empty-icon">🍽️</div><p>Tap any restaurant on the map<br>to log a visit or add to wishlist.</p></div>`;return;}
   let html='';
-  if(visited.length)  { html+=`<div class="section-label">Recently visited</div>`;  visited.forEach(r=>html+=cardHTML(r)); }
-  if(wishlist.length) { html+=`<div class="section-label" style="margin-top:8px">Want to visit</div>`; wishlist.forEach(r=>html+=cardHTML(r)); }
+  if(visited.length){html+=`<div class="section-label">Recently visited</div>`;visited.forEach(r=>html+=cardHTML(r));}
+  if(wishlist.length){html+=`<div class="section-label" style="margin-top:6px">Want to visit</div>`;wishlist.forEach(r=>html+=cardHTML(r));}
   document.getElementById('restaurant-list').innerHTML=html;
 }
 
-function cardHTML(r) {
-  const stars=r.rating?`<span style="color:var(--gold)">★</span> ${r.rating}.0`:`<span style="color:#aaa;font-size:11px">Wishlist</span>`;
-  return `<div class="restaurant-card" data-id="${r.id}" data-status="${r.status}" onclick="focusLog('${r.id}')">
-    <div class="status-dot ${r.status}"></div>
-    <div class="card-top"><div class="card-name">${r.name}</div><div class="card-rating">${stars}</div></div>
-    <div class="card-meta">${r.city||''}${r.country?', '+r.country:''}</div>
-    ${r.notes?`<div class="card-note">"${r.notes}"</div>`:''}</div>`;
+function cardHTML(r){
+  const stars=r.rating?'★'.repeat(r.rating):'';
+  return `<div class="restaurant-card ${r.status}" data-id="${r.id}" data-status="${r.status}" onclick="focusLog('${r.id}')">
+    <div class="card-top"><div class="card-name">${r.name}</div><div class="card-stars">${stars}</div></div>
+    <div class="card-meta">${r.city||''}${r.cuisine?' · '+r.cuisine:''}</div>
+    ${r.notes?`<div class="card-note">"${r.notes}"</div>`:''}
+  </div>`;
 }
 
-function focusLog(id) {
+function focusLog(id){
   const r=myLogs.find(x=>x.id===id);
   if(!r||!r.lat) return;
-  map.panTo({lat:r.lat,lng:r.lng}); map.setZoom(16);
-  showView('map');
-  setTimeout(()=>{
-    const idx=myLogs.findIndex(x=>x.id===id);
-    if(myLogMarkers[idx]) google.maps.event.trigger(myLogMarkers[idx],'click');
-  },400);
+  map.panTo({lat:r.lat,lng:r.lng}); map.setZoom(16); showView('map');
+  setTimeout(()=>{const idx=myLogs.findIndex(x=>x.id===id);if(myLogMarkers[idx])google.maps.event.trigger(myLogMarkers[idx],'click');},400);
 }
 
-function searchCards(v) {
-  const q=v.toLowerCase();
-  document.querySelectorAll('.restaurant-card').forEach(c=>{
-    c.style.display=c.querySelector('.card-name').textContent.toLowerCase().includes(q)?'':'none';
-  });
-}
-
-function filterCards(chip,type) {
-  document.querySelectorAll('.sidebar-header .filter-chip').forEach(c=>c.classList.remove('active'));
-  chip.classList.add('active');
-  document.querySelectorAll('.restaurant-card').forEach(c=>{
-    c.style.display=(type==='all'||c.dataset.status===type)?'':'none';
-  });
-}
+function searchCards(v){const q=v.toLowerCase();document.querySelectorAll('.restaurant-card').forEach(c=>{c.style.display=c.querySelector('.card-name').textContent.toLowerCase().includes(q)?'':'none';});}
+function filterCards(chip,type){document.querySelectorAll('.sidebar-header .filter-chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');document.querySelectorAll('.restaurant-card').forEach(c=>{c.style.display=(type==='all'||c.dataset.status===type)?'':'none';});}
 
 // ── JOURNAL ──
-function renderJournal() {
-  const visited = myLogs.filter(r=>r.status!=='wishlist');
-  document.getElementById('journal-subtitle').textContent=
-    `${visited.length} restaurant${visited.length!==1?'s':''} logged across ${uniqueCities()} cit${uniqueCities()===1?'y':'ies'}`;
-  if(!visited.length){
-    document.getElementById('journal-entries').innerHTML=`<div class="empty-state"><div class="empty-icon">📓</div><p>Your journal is empty.<br>Visit restaurants and log them on the map!</p></div>`;
-    return;
-  }
+function renderJournal(){
+  const visited=myLogs.filter(r=>r.status!=='wishlist');
+  document.getElementById('journal-subtitle').textContent=`${visited.length} restaurant${visited.length!==1?'s':''} across ${uniqueCities()} cit${uniqueCities()===1?'y':'ies'}`;
+  if(!visited.length){document.getElementById('journal-entries').innerHTML=`<div class="empty-state"><div class="empty-icon">📓</div><p>Your journal is empty.<br>Visit restaurants and log them!</p></div>`;return;}
   document.getElementById('journal-entries').innerHTML=visited.map(r=>{
     const stars=r.rating?'★'.repeat(r.rating)+'☆'.repeat(5-r.rating):'';
     const photos=r.photos&&r.photos.length?`<div class="photo-strip">${r.photos.map(p=>`<img src="${p}" onclick="openLightbox('${p}')">`).join('')}</div>`:'';
-    return `<div style="background:white;border-radius:16px;padding:20px;border:1px solid var(--border);display:flex;gap:16px;" data-journal-status="${r.status}">
-      <div style="width:56px;height:56px;background:linear-gradient(135deg,#e8d5c4,#c4a882);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">${statusEmoji[r.status]}</div>
+    return `<div class="journal-card" data-journal-status="${r.status}">
+      <div class="journal-icon ${r.status}">${statusEmoji[r.status]}</div>
       <div style="flex:1;min-width:0;">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
-          <div><div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;">${r.name}</div>
-          <div style="font-size:12px;color:#888;margin-top:2px;">📍 ${r.city||''}${r.country?', '+r.country:''}${r.cuisine&&r.cuisine!=='Restaurant'?' · 🍽 '+r.cuisine:''}${r.date?' &nbsp;·&nbsp; 📅 '+fmtDate(r.date):''}</div></div>
-          <div style="text-align:right;flex-shrink:0;">${stars?`<div style="color:var(--gold);font-size:14px;">${stars}</div>`:''}
-          <div style="font-size:11px;font-weight:600;color:${statusColorV[r.status]};margin-top:2px;">${statusLabel[r.status]}</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+          <div>
+            <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;">${r.name}</div>
+            <div style="font-size:11px;color:#bbb;margin-top:2px;">📍 ${r.city||''}${r.cuisine?' · 🍽 '+r.cuisine:''}${r.date?' · 📅 '+fmtDate(r.date):''}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            ${stars?`<div style="color:var(--gold);font-size:13px;">${stars}</div>`:''}
+            <div style="font-size:10px;font-weight:700;color:${statusColorV[r.status]};margin-top:2px;letter-spacing:0.5px;">${statusLabel[r.status]}</div>
+          </div>
         </div>
-        ${r.notes?`<div style="margin-top:10px;font-size:13px;color:#555;line-height:1.6;font-style:italic;border-left:3px solid var(--blush);padding-left:10px;">"${r.notes}"</div>`:''}
+        ${r.notes?`<div style="margin-top:9px;font-size:12px;color:#666;line-height:1.6;font-style:italic;border-left:2px solid var(--blush);padding-left:9px;">"${r.notes}"</div>`:''}
         ${photos}
       </div>
     </div>`;
   }).join('');
 }
 
-function filterJournal(chip,type){
-  document.querySelectorAll('#view-journal .filter-chip').forEach(c=>c.classList.remove('active'));
-  chip.classList.add('active');
-  document.querySelectorAll('[data-journal-status]').forEach(c=>{
-    c.style.display=(type==='all'||c.dataset.journalStatus===type)?'':'none';
-  });
-}
+function filterJournal(chip,type){document.querySelectorAll('#view-journal .filter-chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');document.querySelectorAll('[data-journal-status]').forEach(c=>{c.style.display=(type==='all'||c.dataset.journalStatus===type)?'':'none';});}
 
 // ── STATS ──
 function updateStats(){
@@ -1242,22 +869,17 @@ function updateStats(){
   document.getElementById('s-avg').textContent=avg;
   document.getElementById('s-wishlist-text').textContent=`${wl} restaurant${wl!==1?'s':''} waiting to be discovered`;
   const total=myLogs.length||1;
-  ['loved','liked','meh','wishlist'].forEach(s=>{
-    const n=myLogs.filter(r=>r.status===s).length;
-    document.getElementById('bar-'+s).style.width=(n/total*100)+'%';
-    document.getElementById('count-'+s).textContent=n;
-  });
+  ['loved','liked','meh','wishlist'].forEach(s=>{const n=myLogs.filter(r=>r.status===s).length;document.getElementById('bar-'+s).style.width=(n/total*100)+'%';document.getElementById('count-'+s).textContent=n;});
   const cuisines={};
-  visited.forEach(r=>{if(r.cuisine&&r.cuisine!=='Restaurant')cuisines[r.cuisine]=(cuisines[r.cuisine]||0)+1;});
+  visited.forEach(r=>{if(r.cuisine)cuisines[r.cuisine]=(cuisines[r.cuisine]||0)+1;});
   const sorted=Object.entries(cuisines).sort((a,b)=>b[1]-a[1]).slice(0,8);
   document.getElementById('cuisine-bars').innerHTML=sorted.length
-    ? sorted.map(([c,n])=>`<div class="cuisine-tag">${c}<span class="cuisine-count">${n}</span></div>`).join('')
-    : '<div style="color:#aaa;font-size:13px;padding:8px 0">Log some restaurants to see your top cuisines</div>';
+    ?sorted.map(([c,n])=>`<div class="cuisine-tag">${c}<span class="cuisine-count">${n}</span></div>`).join('')
+    :'<div style="color:#ccc;font-size:12px;padding:6px 0">Log restaurants to see your top cuisines</div>';
 }
 
-function uniqueCities(){ return new Set(myLogs.filter(r=>r.status!=='wishlist'&&r.city).map(r=>r.city)).size; }
-
-function fmtDate(d){ if(!d)return''; try{const[y,m,day]=d.split('-');return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' '+parseInt(day)+', '+y;}catch{return d;} }
+function uniqueCities(){return new Set(myLogs.filter(r=>r.status!=='wishlist'&&r.city).map(r=>r.city)).size;}
+function fmtDate(d){if(!d)return'';try{const[y,m,day]=d.split('-');return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' '+parseInt(day)+', '+y;}catch{return d;}}
 
 // ── VIEWS ──
 function showView(v){
@@ -1266,43 +888,20 @@ function showView(v){
   document.getElementById('view-stats').classList.toggle('visible',v==='stats');
   document.querySelectorAll('.nav-tab').forEach((t,i)=>t.classList.toggle('active',['map','journal','stats'][i]===v));
   if(v==='journal') renderJournal();
-  if(v==='stats')   updateStats();
+  if(v==='stats') updateStats();
   if(v==='map'&&map) google.maps.event.trigger(map,'resize');
 }
 
 // ── PHOTOS ──
-function handleFiles(files){
-  Array.from(files).slice(0,5-uploadedPhotos.length).forEach(f=>{
-    if(!f.type.startsWith('image/'))return;
-    const r=new FileReader();
-    r.onload=e=>{uploadedPhotos.push(e.target.result);renderPreviews();};
-    r.readAsDataURL(f);
-  });
-}
-
-function handleDrop(e){e.preventDefault();document.getElementById('upload-area').classList.remove('drag-over');handleFiles(e.dataTransfer.files);}
-
-function renderPreviews(){
-  document.getElementById('photo-previews').innerHTML=uploadedPhotos.map((src,i)=>
-    `<div class="photo-thumb-wrap"><img src="${src}"><button class="photo-remove" onclick="removePhoto(${i})">✕</button></div>`
-  ).join('');
-}
-
+function handleFiles(files){Array.from(files).slice(0,5-uploadedPhotos.length).forEach(f=>{if(!f.type.startsWith('image/'))return;const r=new FileReader();r.onload=e=>{uploadedPhotos.push(e.target.result);renderPreviews();};r.readAsDataURL(f);});}
+function handleDrop(e){e.preventDefault();handleFiles(e.dataTransfer.files);}
+function renderPreviews(){document.getElementById('photo-previews').innerHTML=uploadedPhotos.map((src,i)=>`<div class="photo-thumb-wrap"><img src="${src}"><button class="photo-remove" onclick="removePhoto(${i})">✕</button></div>`).join('');}
 function removePhoto(i){uploadedPhotos.splice(i,1);renderPreviews();}
-
-// ── LIGHTBOX ──
 function openLightbox(src){document.getElementById('lightbox-img').src=src;document.getElementById('lightbox').classList.add('open');}
-
 function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
-
-function showToast(msg,isError=false){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast'+(isError?' error':'');
-  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3500);
-}
+function showToast(msg,isError=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(isError?' error':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 
 document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
-
 checkSession();
 </script>
 
@@ -1310,3 +909,5 @@ checkSession();
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDwX99khkW2Jjyiub48UoSSfWy7g1JHcWY&libraries=places&callback=initMap" async defer></script>
 </body>
 </html>
+ENDOFFILE
+echo "Done"
