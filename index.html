@@ -332,18 +332,13 @@ nav{background:var(--ink);color:var(--cream);padding:0 20px;height:54px;flex-shr
   <div style="max-width:720px;margin:0 auto;">
     <div class="page-title">My Food Stats</div>
     <div class="page-sub">Your culinary journey at a glance</div>
-    <div class="stats-grid">
-      <div class="big-stat"><div class="big-num" id="s-visited">0</div><div class="big-label">Visited</div></div>
-      <div class="big-stat"><div class="big-num" id="s-cities">0</div><div class="big-label">Cities</div></div>
-      <div class="big-stat"><div class="big-num" id="s-wishlist">0</div><div class="big-label">Wishlist</div></div>
+
+    <!-- Single big visited stat -->
+    <div class="big-stat" style="margin-bottom:24px;">
+      <div class="big-num" id="s-visited">0</div>
+      <div class="big-label">Restaurants visited</div>
     </div>
-    <div class="wishlist-banner" onclick="showView('map');setTimeout(()=>filterCards(document.querySelector('.filter-chip[onclick*=wishlist]'),'wishlist'),100)">
-      <div class="wishlist-text"><h3>Still on your wishlist</h3><p id="s-wishlist-text">0 restaurants waiting</p></div>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div class="wishlist-num" id="s-wishlist-num">0</div>
-        <div style="font-size:22px;opacity:0.7">&#8594;</div>
-      </div>
-    </div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
       <div class="chart-card">
         <div class="chart-title">Top Cuisines</div>
@@ -377,10 +372,21 @@ nav{background:var(--ink);color:var(--cream);padding:0 20px;height:54px;flex-shr
         </div>
       </div>
     </div>
-    <div class="chart-card">
+
+    <div class="chart-card" style="margin-bottom:14px;">
       <div class="chart-title">Cities</div>
       <div id="cities-grid" class="cuisine-grid"></div>
     </div>
+
+    <!-- Wishlist banner at the bottom -->
+    <div class="wishlist-banner" onclick="showView('map');setTimeout(()=>filterCards(document.querySelector('.filter-chip[onclick*=wishlist]'),'wishlist'),100)">
+      <div class="wishlist-text"><h3>Still on your wishlist</h3><p id="s-wishlist-text">0 restaurants waiting</p></div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="wishlist-num" id="s-wishlist-num">0</div>
+        <div style="font-size:22px;opacity:0.7">&#8594;</div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -566,10 +572,8 @@ function updateStats(){
   document.getElementById('stat-visited').textContent=visited.length;
   document.getElementById('s-visited').textContent=visited.length;
   document.getElementById('stat-wishlist').textContent=wl;
-  document.getElementById('s-wishlist').textContent=wl;
   document.getElementById('s-wishlist-num').textContent=wl;
   document.getElementById('stat-cities').textContent=uniqueCities();
-  document.getElementById('s-cities').textContent=uniqueCities();
   document.getElementById('s-wishlist-text').textContent=`${wl} restaurant${wl!==1?'s':''} waiting to be discovered`;
 
   // Avg rating inline next to "Ratings" title
@@ -585,9 +589,9 @@ function updateStats(){
     document.getElementById('pct-'+s).textContent=n>0?pct+'%':'';
   });
 
-  // Cuisines
+  const SKIP_CUISINES=new Set(['Restaurant','restaurant','meal takeaway','meal delivery','food','establishment','point of interest','']);
   const cuisines={};
-  visited.forEach(r=>{if(r.cuisine)cuisines[r.cuisine]=(cuisines[r.cuisine]||0)+1;});
+  visited.forEach(r=>{if(r.cuisine&&!SKIP_CUISINES.has(r.cuisine))cuisines[r.cuisine]=(cuisines[r.cuisine]||0)+1;});
   const sortedC=Object.entries(cuisines).sort((a,b)=>b[1]-a[1]).slice(0,8);
   const vTotal=visited.length||1;
   document.getElementById('cuisine-bars').innerHTML=sortedC.length
