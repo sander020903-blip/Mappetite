@@ -46,9 +46,9 @@ nav{background:var(--ink);color:var(--cream);padding:0 20px;height:54px;flex-shr
 .card-stars{color:var(--gold);font-size:11px;flex-shrink:0;}
 .card-meta{font-size:11px;color:#aaa;padding-left:8px;}
 .card-note{font-size:11px;color:#777;font-style:italic;line-height:1.4;padding-left:8px;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.sidebar-toggle{position:absolute;right:-16px;top:50%;transform:translateY(-50%);width:16px;height:48px;background:var(--card);border:1px solid var(--border);border-left:none;border-radius:0 8px 8px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;transition:background 0.2s;box-shadow:2px 0 8px rgba(0,0,0,0.06);}
+.sidebar-toggle{width:16px;height:48px;background:var(--card);border:1px solid var(--border);border-left:none;border-radius:0 8px 8px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.2s;box-shadow:2px 0 8px rgba(0,0,0,0.06);}
 .sidebar-toggle:hover{background:var(--cream);}
-.sidebar-toggle-float{position:absolute;left:0;top:50%;transform:translateY(-50%);width:20px;height:52px;background:white;border:1px solid var(--border);border-left:none;border-radius:0 8px 8px 0;cursor:pointer;align-items:center;justify-content:center;z-index:6;box-shadow:2px 0 8px rgba(0,0,0,0.1);display:none;}
+.sidebar-toggle-float{display:none;}
 .loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;gap:12px;color:#bbb;font-size:13px;}
 .spinner{width:24px;height:24px;border:2.5px solid var(--border);border-top-color:var(--rust);border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -149,14 +149,16 @@ nav{background:var(--ink);color:var(--cream);padding:0 20px;height:54px;flex-shr
 .submit-btn{width:100%;padding:13px;background:var(--rust);color:white;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;transition:background 0.2s;}
 .submit-btn:hover{background:#A8441A;}
 .submit-btn:disabled{background:#ccc;cursor:not-allowed;}
-.cuisine-summary{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;background:var(--cream);transition:border-color 0.2s;}
-.cuisine-summary:hover{border-color:var(--rust);}
-.cuisine-summary-name{font-size:13px;color:var(--ink);font-weight:500;}
-.cuisine-summary-hint{font-size:11px;color:#aaa;}
 .cuisine-picker{display:flex;flex-wrap:wrap;gap:6px;max-height:180px;overflow-y:auto;padding:2px;margin-top:8px;}
 .cuisine-picker::-webkit-scrollbar{width:3px;}
 .cuisine-picker::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 .cuisine-picker.hidden{display:none;}
+.cuisine-summary{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;background:var(--cream);transition:border-color 0.2s;}
+.cuisine-summary:hover{border-color:var(--rust);}
+.cuisine-summary-name{font-size:13px;color:var(--ink);font-weight:500;}
+.cuisine-summary-hint{font-size:11px;color:#aaa;}
+.cuisine-summary-arrow{font-size:10px;color:#aaa;transition:transform 0.2s;}
+.cuisine-summary-arrow.open{transform:rotate(180deg);}
 .cuisine-pill{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:white;color:#666;transition:all 0.15s;user-select:none;}
 .cuisine-pill:hover{border-color:var(--rust);color:var(--rust);}
 .cuisine-pill.selected{background:var(--rust);color:white;border-color:var(--rust);}
@@ -265,20 +267,17 @@ nav{background:var(--ink);color:var(--cream);padding:0 20px;height:54px;flex-shr
     <div class="restaurant-list" id="restaurant-list">
       <div class="loading-state"><div class="spinner"></div><span>Loading your places...</span></div>
     </div>
-    <div class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
-      <svg id="toggle-arrow" width="8" height="14" viewBox="0 0 8 14" fill="none">
-        <path d="M7 1L1 7L7 13" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
+  </div>
+
+  <!-- Toggle lives outside sidebar so it persists when sidebar collapses -->
+  <div class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
+    <svg id="toggle-arrow" width="8" height="14" viewBox="0 0 8 14" fill="none">
+      <path d="M7 1L1 7L7 13" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
   </div>
 
   <div class="map-area" id="map-area">
     <div id="google-map"></div>
-    <div class="sidebar-toggle-float" id="sidebar-float" onclick="toggleSidebar()">
-      <svg width="8" height="14" viewBox="0 0 8 14" fill="none">
-        <path d="M1 1L7 7L1 13" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
     <div class="map-search">
       <input type="text" id="city-search" placeholder="Search any city or restaurant...">
       <button class="locate-btn" onclick="goToMyLocation()" title="Go to my location">
@@ -336,12 +335,12 @@ nav{background:var(--ink);color:var(--cream);padding:0 20px;height:54px;flex-shr
     <div class="stats-grid">
       <div class="big-stat"><div class="big-num" id="s-visited">0</div><div class="big-label">Visited</div></div>
       <div class="big-stat"><div class="big-num" id="s-cities">0</div><div class="big-label">Cities</div></div>
-      <div class="big-stat"><div class="big-num" id="s-avg">&#8212;</div><div class="big-label">Avg rating</div></div>
+      <div class="big-stat"><div class="big-num" id="s-wishlist">0</div><div class="big-label">Wishlist</div></div>
     </div>
     <div class="wishlist-banner" onclick="showView('map');setTimeout(()=>filterCards(document.querySelector('.filter-chip[onclick*=wishlist]'),'wishlist'),100)">
       <div class="wishlist-text"><h3>Still on your wishlist</h3><p id="s-wishlist-text">0 restaurants waiting</p></div>
       <div style="display:flex;align-items:center;gap:12px;">
-        <div class="wishlist-num" id="s-wishlist">0</div>
+        <div class="wishlist-num" id="s-wishlist-num">0</div>
         <div style="font-size:22px;opacity:0.7">&#8594;</div>
       </div>
     </div>
@@ -351,7 +350,7 @@ nav{background:var(--ink);color:var(--cream);padding:0 20px;height:54px;flex-shr
         <div id="cuisine-bars" class="cuisine-grid"></div>
       </div>
       <div class="chart-card">
-        <div class="chart-title">Ratings</div>
+        <div class="chart-title">Ratings <span id="avg-rating-inline" style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#aaa;margin-left:6px;"></span></div>
         <div class="stat-bar-row" onclick="filterJournalFromStats('loved')">
           <div class="bar-label">&#10084;&#65039; Loved</div>
           <div class="bar-track"><div class="bar-fill sage" id="bar-loved" style="width:0%"></div></div>
@@ -377,6 +376,10 @@ nav{background:var(--ink);color:var(--cream);padding:0 20px;height:54px;flex-shr
           <div class="bar-count" id="count-wishlist">0</div>
         </div>
       </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Cities</div>
+      <div id="cities-grid" class="cuisine-grid"></div>
     </div>
   </div>
 </div>
@@ -411,7 +414,7 @@ nav{background:var(--ink);color:var(--cream);padding:0 20px;height:54px;flex-shr
         <label class="form-label">Cuisine <span style="font-weight:400;color:#ccc;text-transform:none;letter-spacing:0">(auto-suggested, tap to change)</span></label>
         <div class="cuisine-summary" id="cuisine-summary" onclick="toggleCuisinePicker()">
           <span class="cuisine-summary-name" id="cuisine-summary-name">Not specified</span>
-          <span class="cuisine-summary-hint" id="cuisine-summary-hint">tap to change &#9660;</span>
+          <span class="cuisine-summary-hint">tap to change &#9660;</span>
         </div>
         <div class="cuisine-picker hidden" id="cuisine-picker"></div>
       </div>
@@ -463,12 +466,8 @@ document.addEventListener('click',e=>{if(!e.target.closest('.user-menu-wrap'))to
 let sidebarOpen=true;
 function toggleSidebar(){
   sidebarOpen=!sidebarOpen;
-  const sb=document.getElementById('sidebar');
-  const fl=document.getElementById('sidebar-float');
-  const arrow=document.getElementById('toggle-arrow');
-  sb.classList.toggle('collapsed',!sidebarOpen);
-  fl.style.display=sidebarOpen?'none':'flex';
-  arrow.style.transform=sidebarOpen?'':'scaleX(-1)';
+  document.getElementById('sidebar').classList.toggle('collapsed',!sidebarOpen);
+  document.getElementById('toggle-arrow').style.transform=sidebarOpen?'':'scaleX(-1)';
   if(map)setTimeout(()=>google.maps.event.trigger(map,'resize'),350);
 }
 
@@ -485,51 +484,19 @@ const starToStatus={1:'meh',2:'meh',3:'liked',4:'liked',5:'loved'};
 const starToLabel={1:'\ud83d\ude10 Not great',2:'\ud83d\ude10 It was okay',3:'\ud83d\udc4d Pretty good',4:'\ud83d\udc4d Really good',5:'\u2764\ufe0f Loved it!'};
 const starToColor={1:'meh',2:'meh',3:'liked',4:'liked',5:'loved'};
 
-function buildCuisinePicker(suggested){
-  selectedCuisine=suggested||'';
-  document.getElementById('cuisine-summary-name').textContent=selectedCuisine||'Not specified';
-  document.getElementById('cuisine-picker').innerHTML=ALL_CUISINES.map(c=>`<div class="cuisine-pill ${c===selectedCuisine?'selected':''}" onclick="selectCuisine('${c.replace(/'/g,"\\'").replace(/"/g,'&quot;')}',this)">${c}</div>`).join('');
-  document.getElementById('cuisine-picker').classList.add('hidden');
-  document.getElementById('cuisine-summary-hint').innerHTML='tap to change &#9660;';
-}
-function toggleCuisinePicker(){
-  const picker=document.getElementById('cuisine-picker');
-  const hint=document.getElementById('cuisine-summary-hint');
-  const opening=picker.classList.contains('hidden');
-  picker.classList.toggle('hidden',!opening);
-  hint.innerHTML=opening?'tap to close &#9650;':'tap to change &#9660;';
-  if(opening&&selectedCuisine){const sel=picker.querySelector('.cuisine-pill.selected');if(sel)setTimeout(()=>sel.scrollIntoView({behavior:'smooth',block:'nearest'}),50);}
-}
-function selectCuisine(name,el){
-  selectedCuisine=name;
-  document.querySelectorAll('.cuisine-pill').forEach(p=>p.classList.remove('selected'));
-  el.classList.add('selected');
-  document.getElementById('cuisine-summary-name').textContent=name;
-  document.getElementById('cuisine-picker').classList.add('hidden');
-  document.getElementById('cuisine-summary-hint').innerHTML='tap to change &#9660;';
-}
+function buildCuisinePicker(suggested){selectedCuisine=suggested||'';document.getElementById('cuisine-summary-name').textContent=selectedCuisine||'Not specified';document.getElementById('cuisine-picker').innerHTML=ALL_CUISINES.map(c=>`<div class="cuisine-pill ${c===selectedCuisine?'selected':''}" onclick="selectCuisine('${c.replace(/'/g,"\\'").replace(/"/g,"&quot;")}',this)">${c}</div>`).join('');document.getElementById('cuisine-picker').classList.add('hidden');document.querySelector('.cuisine-summary-hint').innerHTML='tap to change &#9660;';}
+function toggleCuisinePicker(){const picker=document.getElementById('cuisine-picker');const hint=document.querySelector('.cuisine-summary-hint');const opening=picker.classList.contains('hidden');picker.classList.toggle('hidden',!opening);hint.innerHTML=opening?'tap to close &#9650;':'tap to change &#9660;';if(opening&&selectedCuisine){const sel=picker.querySelector('.cuisine-pill.selected');if(sel)setTimeout(()=>sel.scrollIntoView({behavior:'smooth',block:'nearest'}),50);}}
+function selectCuisine(name,el){selectedCuisine=name;document.querySelectorAll('.cuisine-pill').forEach(p=>p.classList.remove('selected'));el.classList.add('selected');document.getElementById('cuisine-summary-name').textContent=name;document.getElementById('cuisine-picker').classList.add('hidden');document.querySelector('.cuisine-summary-hint').innerHTML='tap to change &#9660;';}
 
 async function loadMyLogs(){if(!currentUser)return;try{const res=await fetch(`${API}?user_id=eq.${currentUser.id}&order=created_at.desc`,{headers:getHeaders()});if(!res.ok)throw new Error();myLogs=(await res.json()).map(r=>({...r,photos:r.photos||[]}));renderSidebar();renderMyLogMarkers();updateStats();}catch(e){showToast('Could not load your data',true);document.getElementById('restaurant-list').innerHTML='<div class="empty-state"><div class="empty-icon">\u26a0\ufe0f</div><p>Could not connect.</p></div>';}}
 
-function initMap(){
-  map=new google.maps.Map(document.getElementById('google-map'),{center:{lat:51.05,lng:4.4},zoom:14,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,styles:[{elementType:'geometry',stylers:[{color:'#f5f0e8'}]},{featureType:'water',elementType:'geometry',stylers:[{color:'#c9d8e8'}]},{featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#9da5b3'}]},{featureType:'road',elementType:'geometry.fill',stylers:[{color:'#ffffff'}]},{featureType:'road',elementType:'geometry.stroke',stylers:[{color:'#e8e0d5'}]},{featureType:'road.highway',elementType:'geometry.fill',stylers:[{color:'#f0e8d8'}]},{featureType:'road.highway',elementType:'geometry.stroke',stylers:[{color:'#ddd0be'}]},{featureType:'road.arterial',elementType:'geometry.fill',stylers:[{color:'#ffffff'}]},{featureType:'road.local',elementType:'geometry.fill',stylers:[{color:'#ffffff'}]},{featureType:'landscape',elementType:'geometry',stylers:[{color:'#f0ebe2'}]},{featureType:'landscape.natural',elementType:'geometry',stylers:[{color:'#e8f0e0'}]},{featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]},{featureType:'poi.park',elementType:'geometry',stylers:[{color:'#ddeedd'}]},{featureType:'transit',stylers:[{visibility:'off'}]},{featureType:'administrative.country',elementType:'geometry.stroke',stylers:[{color:'#c8bfb0'}]},{featureType:'administrative.locality',elementType:'labels.text.fill',stylers:[{color:'#8a7a6a'}]}]});
-  placesService=new google.maps.places.PlacesService(map);
-  infoWindow=new google.maps.InfoWindow();
-  initAutocomplete();
-  // Start watching location immediately
-  if(navigator.geolocation&&watchId===null){watchId=navigator.geolocation.watchPosition(p=>{userLocation={lat:p.coords.latitude,lng:p.coords.longitude};if(locationMarker)locationMarker.setPosition(userLocation);},null,{enableHighAccuracy:true,maximumAge:5000});}
-  goToMyLocation();
-  let idleTimer;
-  map.addListener('idle',()=>{clearTimeout(idleTimer);idleTimer=setTimeout(searchNearbyRestaurants,600);});
-  map.addListener('click',()=>closePanel());
-  if(currentUser)loadMyLogs();
-}
+function initMap(){map=new google.maps.Map(document.getElementById('google-map'),{center:{lat:51.05,lng:4.4},zoom:14,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,styles:[{elementType:'geometry',stylers:[{color:'#f5f0e8'}]},{featureType:'water',elementType:'geometry',stylers:[{color:'#c9d8e8'}]},{featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#9da5b3'}]},{featureType:'road',elementType:'geometry.fill',stylers:[{color:'#ffffff'}]},{featureType:'road',elementType:'geometry.stroke',stylers:[{color:'#e8e0d5'}]},{featureType:'road.highway',elementType:'geometry.fill',stylers:[{color:'#f0e8d8'}]},{featureType:'road.highway',elementType:'geometry.stroke',stylers:[{color:'#ddd0be'}]},{featureType:'road.arterial',elementType:'geometry.fill',stylers:[{color:'#ffffff'}]},{featureType:'road.local',elementType:'geometry.fill',stylers:[{color:'#ffffff'}]},{featureType:'landscape',elementType:'geometry',stylers:[{color:'#f0ebe2'}]},{featureType:'landscape.natural',elementType:'geometry',stylers:[{color:'#e8f0e0'}]},{featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]},{featureType:'poi.park',elementType:'geometry',stylers:[{color:'#ddeedd'}]},{featureType:'transit',stylers:[{visibility:'off'}]},{featureType:'administrative.country',elementType:'geometry.stroke',stylers:[{color:'#c8bfb0'}]},{featureType:'administrative.locality',elementType:'labels.text.fill',stylers:[{color:'#8a7a6a'}]}]});placesService=new google.maps.places.PlacesService(map);infoWindow=new google.maps.InfoWindow();initAutocomplete();if(navigator.geolocation&&watchId===null){watchId=navigator.geolocation.watchPosition(p=>{userLocation={lat:p.coords.latitude,lng:p.coords.longitude};if(locationMarker)locationMarker.setPosition(userLocation);},null,{enableHighAccuracy:true,maximumAge:5000});}goToMyLocation();let idleTimer;map.addListener('idle',()=>{clearTimeout(idleTimer);idleTimer=setTimeout(searchNearbyRestaurants,600);});map.addListener('click',()=>closePanel());if(currentUser)loadMyLogs();}
 
 function goToMyLocation(){
-  // Instantly re-center on cached location if available
+  // If we already have a cached location, re-center instantly
   if(userLocation){map.setCenter(userLocation);map.setZoom(15);}
   if(!navigator.geolocation)return;
-  // Always get a fresh position too
+  // Always fetch fresh position too
   navigator.geolocation.getCurrentPosition(pos=>{
     userLocation={lat:pos.coords.latitude,lng:pos.coords.longitude};
     map.setCenter(userLocation);map.setZoom(15);
@@ -542,6 +509,8 @@ function placeLocationDot(loc){
   if(locationMarker)locationMarker.setMap(null);
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="rgba(196,84,26,0.15)"/><circle cx="18" cy="18" r="11" fill="white" stroke="#C4541A" stroke-width="2"/><circle cx="18" cy="13" r="3" fill="#C4541A"/><path d="M18 17c-3 0-4.5 1.8-4.5 3.5V25h3V30h3V25h3v-4.5C22.5 18.8 21 17 18 17z" fill="#C4541A"/></svg>`;
   locationMarker=new google.maps.Marker({position:loc,map,icon:{url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg),scaledSize:new google.maps.Size(36,36),anchor:new google.maps.Point(18,18)},title:'You are here',zIndex:20,optimized:false});
+  // Only set up watchPosition once
+  if(watchId===null&&navigator.geolocation){watchId=navigator.geolocation.watchPosition(p=>{userLocation={lat:p.coords.latitude,lng:p.coords.longitude};if(locationMarker)locationMarker.setPosition(userLocation);},null,{enableHighAccuracy:true,maximumAge:5000});}
 }
 
 function initAutocomplete(){const input=document.getElementById('city-search');const ac=new google.maps.places.Autocomplete(input,{types:['establishment','geocode']});ac.bindTo('bounds',map);ac.addListener('place_changed',()=>{const place=ac.getPlace();if(!place.geometry||!place.geometry.location){showToast('Place not found',true);return;}if(place.geometry.viewport)map.fitBounds(place.geometry.viewport);else{map.setCenter(place.geometry.location);map.setZoom(15);}if(place.types&&(place.types.includes('restaurant')||place.types.includes('food')))openPlacePanel(place,null);});}
@@ -554,22 +523,7 @@ function searchNearbyRestaurants(){if(!placesService)return;nearbyMarkers.forEac
 
 function addNearbyMarker(place){nearbyPlaceData[place.place_id]=place;const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7" fill="#aaa" stroke="white" stroke-width="2"/></svg>`;const marker=new google.maps.Marker({position:place.geometry.location,map,icon:{url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg),scaledSize:new google.maps.Size(18,18),anchor:new google.maps.Point(9,9)},title:place.name,zIndex:1});marker.addListener('click',()=>openPlacePanel(place,marker));nearbyMarkers.push(marker);}
 
-let inSuggestMode=false;
-function showSuggestions(chip){
-  if(inSuggestMode){inSuggestMode=false;renderSidebar();return;}
-  inSuggestMode=true;
-  document.querySelectorAll('.sidebar-header .filter-chip').forEach(c=>c.classList.remove('active'));
-  chip.classList.add('active');
-  const preferred=myLogs.filter(r=>r.status==='loved'||r.status==='liked');
-  const cuisinePref={};
-  preferred.forEach(r=>{if(r.cuisine)cuisinePref[r.cuisine]=(cuisinePref[r.cuisine]||0)+(r.status==='loved'?2:1);});
-  const allPlaces=Object.values(nearbyPlaceData);
-  const scored=allPlaces.map(place=>{let score=0;const types=place.types||[];types.forEach(t=>{const label=t.replace(/_/g,' ');if(cuisinePref[label])score+=cuisinePref[label];if(TYPE_MAP[t]&&cuisinePref[TYPE_MAP[t]])score+=cuisinePref[TYPE_MAP[t]];});if(place.rating)score+=place.rating*0.5;return{score,place};}).sort((a,b)=>b.score-a.score).slice(0,8);
-  if(!scored.length){document.getElementById('restaurant-list').innerHTML='<div class="empty-state"><div class="empty-icon">\u2728</div><p>Explore the map first<br>to get personalised suggestions!</p></div>';return;}
-  const hasPrefs=Object.keys(cuisinePref).length>0;
-  const subtitle=hasPrefs?`Based on your love of ${Object.keys(cuisinePref).slice(0,2).join(' & ')}`:'Top rated nearby';
-  document.getElementById('restaurant-list').innerHTML=`<div class="section-label">${subtitle}</div>${scored.map(({place})=>`<div class="restaurant-card" onclick="openPlaceFromSuggestion('${place.place_id}')"><div class="card-top"><div class="card-name">${place.name}</div><div class="card-stars" style="color:var(--gold)">${place.rating?'\u2605 '+place.rating:''}</div></div><div class="card-meta">${place.vicinity||''}${place.price_level?' \u00b7 '+'\u20ac'.repeat(place.price_level):''}</div></div>`).join('')}`;
-}
+function showSuggestions(chip){if(inSuggestionsMode){inSuggestionsMode=false;renderSidebar();return;}inSuggestionsMode=true;document.querySelectorAll('.sidebar-header .filter-chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');const preferred=myLogs.filter(r=>r.status==='loved'||r.status==='liked');const cuisinePref={};preferred.forEach(r=>{if(r.cuisine)cuisinePref[r.cuisine]=(cuisinePref[r.cuisine]||0)+(r.status==='loved'?2:1);});const allPlaces=Object.values(nearbyPlaceData);const scored=allPlaces.map(place=>{let score=0;const types=place.types||[];types.forEach(t=>{const label=t.replace(/_/g,' ');if(cuisinePref[label])score+=cuisinePref[label];if(TYPE_MAP[t]&&cuisinePref[TYPE_MAP[t]])score+=cuisinePref[TYPE_MAP[t]];});if(place.rating)score+=place.rating*0.5;return{score,place};}).sort((a,b)=>b.score-a.score).slice(0,8);if(!scored.length){document.getElementById('restaurant-list').innerHTML='<div class="empty-state"><div class="empty-icon">\u2728</div><p>Explore the map first<br>to get personalised suggestions!</p></div>';return;}const hasPrefs=Object.keys(cuisinePref).length>0;const subtitle=hasPrefs?`Based on your love of ${Object.keys(cuisinePref).slice(0,2).join(' & ')}`:'Top rated nearby';document.getElementById('restaurant-list').innerHTML=`<div class="section-label">${subtitle}</div>${scored.map(({place})=>`<div class="restaurant-card" onclick="openPlaceFromSuggestion('${place.place_id}')"><div class="card-top"><div class="card-name">${place.name}</div><div class="card-stars" style="color:var(--gold)">${place.rating?'\u2605 '+place.rating:''}</div></div><div class="card-meta">${place.vicinity||''}${place.price_level?' \u00b7 '+'\u20ac'.repeat(place.price_level):''}</div></div>`).join('')}`;}
 function openPlaceFromSuggestion(placeId){const place=nearbyPlaceData[placeId];if(place){showView('map');openPlacePanel(place,null);map.panTo(place.geometry.location);map.setZoom(16);}}
 
 function renderMyLogMarkers(){if(clusterer)clusterer.clearMarkers();myLogMarkers.forEach(m=>m.setMap(null));myLogMarkers=[];myLogs.forEach(r=>{if(!r.lat||!r.lng)return;const color=statusColors[r.status];const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40"><path d="M16 1C7.72 1 1 7.72 1 16c0 10.5 15 23 15 23s15-12.5 15-23C31 7.72 24.28 1 16 1z" fill="${color}" stroke="white" stroke-width="2"/><circle cx="16" cy="16" r="6" fill="white" opacity="0.95"/></svg>`;const marker=new google.maps.Marker({position:{lat:r.lat,lng:r.lng},map,icon:{url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg),scaledSize:new google.maps.Size(32,40),anchor:new google.maps.Point(16,40)},title:r.name,zIndex:10});marker.addListener('click',()=>openLoggedPanel(r));myLogMarkers.push(marker);});clusterer=new markerClusterer.MarkerClusterer({map,markers:myLogMarkers,renderer:{render({count,position}){const size=count<5?38:count<15?48:58,fs=count<5?12:14;const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle cx="${size/2}" cy="${size/2}" r="${size/2-1}" fill="#1A1208" opacity="0.85"/><circle cx="${size/2}" cy="${size/2}" r="${size/2-5}" fill="#C4541A"/><text x="${size/2}" y="${size/2+1}" text-anchor="middle" dominant-baseline="middle" font-family="DM Sans,sans-serif" font-size="${fs}" font-weight="700" fill="white">${count}</text></svg>`;return new google.maps.Marker({position,zIndex:1000+count,icon:{url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg),scaledSize:new google.maps.Size(size,size),anchor:new google.maps.Point(size/2,size/2)}});}}});}
@@ -580,78 +534,78 @@ function closePanel(){document.getElementById('place-panel').classList.remove('o
 
 async function quickWishlist(){if(!selectedPlace)return;const place=selectedPlace;const loc=place.geometry.location;const entry={place_id:place.place_id||null,name:place.name,city:extractCity(place.vicinity),country:'',cuisine:'',status:'wishlist',rating:null,notes:'',date:null,photos:[],lat:typeof loc.lat==='function'?loc.lat():loc.lat,lng:typeof loc.lng==='function'?loc.lng():loc.lng};try{const res=await fetch(API,{method:'POST',headers:getHeaders(),body:JSON.stringify({...entry,user_id:currentUser.id})});if(!res.ok)throw new Error();const saved=(await res.json())[0];myLogs.unshift(saved);closePanel();nearbyMarkers=nearbyMarkers.filter(m=>{if(m.getTitle()===place.name){m.setMap(null);return false;}return true;});renderSidebar();renderMyLogMarkers();updateStats();showToast(place.name+' added to wishlist!');}catch(e){showToast('Could not save',true);}}
 
-function openLogModal(){
-  if(!selectedPlace)return;
-  uploadedPhotos=[];starVal=0;currentRating='loved';
-  document.getElementById('modal-restaurant-name').textContent=selectedPlace.name;
-  document.getElementById('modal-restaurant-addr').textContent=selectedPlace.vicinity||'';
-  document.getElementById('f-notes').value='';
-  document.getElementById('f-date').value='';
-  document.querySelectorAll('.star-big').forEach(s=>s.classList.remove('filled'));
-  document.getElementById('star-label').textContent='Tap a star to rate';
-  document.getElementById('star-label').className='star-label';
-  document.getElementById('badge-wishlist').classList.remove('wishlist-active');
-  document.getElementById('photo-previews').innerHTML='';
-  document.getElementById('submit-btn').disabled=false;
-  document.getElementById('submit-btn').textContent='Save to my journal \u2713';
-  const types=(selectedPlace.types||[]);
-  let suggested='';
-  for(const t of types){if(TYPE_MAP[t]){suggested=TYPE_MAP[t];break;}}
-  if(!suggested){const skipTypes=new Set(['restaurant','food','point_of_interest','establishment','premise','subpremise','locality','political']);const raw=types.find(t=>!skipTypes.has(t));if(raw){const label=raw.replace(/_/g,' ');const match=ALL_CUISINES.find(c=>c.toLowerCase()===label.toLowerCase());if(match)suggested=match;}}
-  buildCuisinePicker(suggested);
-  const existing=myLogs.find(l=>l.place_id===selectedPlace.place_id);
-  if(existing){if(existing.status==='wishlist')setWishlist();else if(existing.rating)setStar(existing.rating);document.getElementById('f-notes').value=existing.notes||'';document.getElementById('f-date').value=existing.date||'';if(existing.cuisine)buildCuisinePicker(existing.cuisine);}
-  document.getElementById('modal').classList.add('open');
-}
+function openLogModal(){if(!selectedPlace)return;uploadedPhotos=[];starVal=0;currentRating='loved';document.getElementById('modal-restaurant-name').textContent=selectedPlace.name;document.getElementById('modal-restaurant-addr').textContent=selectedPlace.vicinity||'';document.getElementById('f-notes').value='';document.getElementById('f-date').value='';document.querySelectorAll('.star-big').forEach(s=>s.classList.remove('filled'));document.getElementById('star-label').textContent='Tap a star to rate';document.getElementById('star-label').className='star-label';document.getElementById('badge-wishlist').classList.remove('wishlist-active');document.getElementById('photo-previews').innerHTML='';document.getElementById('submit-btn').disabled=false;document.getElementById('submit-btn').textContent='Save to my journal \u2713';
+const types=(selectedPlace.types||[]);let suggested='';for(const t of types){if(TYPE_MAP[t]){suggested=TYPE_MAP[t];break;}}if(!suggested){const skipTypes=new Set(['restaurant','food','point_of_interest','establishment','premise','subpremise','locality','political']);const raw=types.find(t=>!skipTypes.has(t));if(raw){const label=raw.replace(/_/g,' ');const match=ALL_CUISINES.find(c=>c.toLowerCase()===label.toLowerCase());if(match)suggested=match;}}buildCuisinePicker(suggested);
+const existing=myLogs.find(l=>l.place_id===selectedPlace.place_id);if(existing){if(existing.status==='wishlist')setWishlist();else if(existing.rating)setStar(existing.rating);document.getElementById('f-notes').value=existing.notes||'';document.getElementById('f-date').value=existing.date||'';if(existing.cuisine)buildCuisinePicker(existing.cuisine);}document.getElementById('modal').classList.add('open');}
 function closeModal(){document.getElementById('modal').classList.remove('open');}
 
 function setStar(n){starVal=n;currentRating=starToStatus[n];document.querySelectorAll('.star-big').forEach((s,i)=>s.classList.toggle('filled',i<n));const lbl=document.getElementById('star-label');lbl.textContent=starToLabel[n];lbl.className='star-label '+starToColor[n];document.getElementById('badge-wishlist').classList.remove('wishlist-active');}
 function setWishlist(){starVal=0;currentRating='wishlist';document.querySelectorAll('.star-big').forEach(s=>s.classList.remove('filled'));const lbl=document.getElementById('star-label');lbl.textContent='\ud83d\udccc Saving to wishlist';lbl.className='star-label';document.getElementById('badge-wishlist').classList.add('wishlist-active');}
 function selectRating(type){if(type==='loved')setStar(5);else if(type==='liked')setStar(3);else if(type==='meh')setStar(1);else setWishlist();}
 
-async function submitLog(){
-  if(!selectedPlace){showToast('No restaurant selected',true);return;}
-  const place=selectedPlace;
-  const btn=document.getElementById('submit-btn');
-  btn.disabled=true;btn.textContent='Saving...';
-  const loc=place.geometry.location;
-  const lat=typeof loc.lat==='function'?loc.lat():loc.lat;
-  const lng=typeof loc.lng==='function'?loc.lng():loc.lng;
-  const entry={place_id:place.place_id||null,name:place.name,city:extractCity(place.vicinity),country:'',cuisine:selectedCuisine||'',status:currentRating,rating:starVal||null,notes:document.getElementById('f-notes').value.trim(),date:document.getElementById('f-date').value||null,photos:[...uploadedPhotos],lat,lng};
-  try{
-    const existing=myLogs.find(l=>l.place_id&&l.place_id===place.place_id);
-    if(existing){const res=await fetch(`${API}?id=eq.${existing.id}&user_id=eq.${currentUser.id}`,{method:'PATCH',headers:getHeaders(),body:JSON.stringify(entry)});if(!res.ok)throw new Error(await res.text());myLogs=myLogs.map(l=>l.id===existing.id?{...l,...entry}:l);}
-    else{const res=await fetch(API,{method:'POST',headers:getHeaders(),body:JSON.stringify({...entry,user_id:currentUser.id})});if(!res.ok)throw new Error(await res.text());const saved=(await res.json())[0];myLogs.unshift(saved);nearbyMarkers=nearbyMarkers.filter(m=>{if(m.getTitle()===place.name){m.setMap(null);return false;}return true;});}
-    closeModal();closePanel();renderSidebar();renderMyLogMarkers();updateStats();showToast(place.name+' saved!');
-  }catch(e){console.error(e);showToast('Could not save \u2014 please try again',true);btn.disabled=false;btn.textContent='Save to my journal \u2713';}
-}
+async function submitLog(){if(!selectedPlace){showToast('No restaurant selected',true);return;}const place=selectedPlace;const btn=document.getElementById('submit-btn');btn.disabled=true;btn.textContent='Saving...';const loc=place.geometry.location;const lat=typeof loc.lat==='function'?loc.lat():loc.lat;const lng=typeof loc.lng==='function'?loc.lng():loc.lng;const entry={place_id:place.place_id||null,name:place.name,city:extractCity(place.vicinity),country:'',cuisine:selectedCuisine||'',status:currentRating,rating:starVal||null,notes:document.getElementById('f-notes').value.trim(),date:document.getElementById('f-date').value||null,photos:[...uploadedPhotos],lat,lng};try{const existing=myLogs.find(l=>l.place_id&&l.place_id===place.place_id);if(existing){const res=await fetch(`${API}?id=eq.${existing.id}&user_id=eq.${currentUser.id}`,{method:'PATCH',headers:getHeaders(),body:JSON.stringify(entry)});if(!res.ok)throw new Error(await res.text());myLogs=myLogs.map(l=>l.id===existing.id?{...l,...entry}:l);}else{const res=await fetch(API,{method:'POST',headers:getHeaders(),body:JSON.stringify({...entry,user_id:currentUser.id})});if(!res.ok)throw new Error(await res.text());const saved=(await res.json())[0];myLogs.unshift(saved);nearbyMarkers=nearbyMarkers.filter(m=>{if(m.getTitle()===place.name){m.setMap(null);return false;}return true;});}closeModal();closePanel();renderSidebar();renderMyLogMarkers();updateStats();showToast(place.name+' saved!');}catch(e){console.error(e);showToast('Could not save \u2014 please try again',true);btn.disabled=false;btn.textContent='Save to my journal \u2713';}}
 
 function extractCity(v){if(!v)return'';const p=v.split(',');return p[p.length-1]?.trim()||p[0]||'';}
 
-function renderSidebar(){
-  inSuggestMode=false;
-  document.querySelectorAll('.sidebar-header .filter-chip').forEach(c=>c.classList.remove('active'));
-  document.querySelector('.sidebar-header .filter-chip').classList.add('active');
-  const visited=myLogs.filter(r=>r.status!=='wishlist');
-  const wishlist=myLogs.filter(r=>r.status==='wishlist');
-  if(!myLogs.length){document.getElementById('restaurant-list').innerHTML='<div class="empty-state"><div class="empty-icon">\ud83c\udf7d\ufe0f</div><p>Tap any restaurant on the map<br>to log a visit or add to wishlist.</p></div>';return;}
-  let html='';
-  if(visited.length){html+='<div class="section-label">Recently visited</div>';visited.forEach(r=>html+=cardHTML(r));}
-  if(wishlist.length){html+='<div class="section-label" style="margin-top:6px">Want to visit</div>';wishlist.forEach(r=>html+=cardHTML(r));}
-  document.getElementById('restaurant-list').innerHTML=html;
-}
+function renderSidebar(){inSuggestionsMode=false;document.querySelectorAll('.sidebar-header .filter-chip').forEach(c=>c.classList.remove('active'));document.querySelector('.sidebar-header .filter-chip').classList.add('active');const visited=myLogs.filter(r=>r.status!=='wishlist');const wishlist=myLogs.filter(r=>r.status==='wishlist');if(!myLogs.length){document.getElementById('restaurant-list').innerHTML='<div class="empty-state"><div class="empty-icon">\ud83c\udf7d\ufe0f</div><p>Tap any restaurant on the map<br>to log a visit or add to wishlist.</p></div>';return;}let html='';if(visited.length){html+='<div class="section-label">Recently visited</div>';visited.forEach(r=>html+=cardHTML(r));}if(wishlist.length){html+='<div class="section-label" style="margin-top:6px">Want to visit</div>';wishlist.forEach(r=>html+=cardHTML(r));}document.getElementById('restaurant-list').innerHTML=html;}
 function cardHTML(r){const stars=r.rating?'\u2605'.repeat(r.rating):'';return `<div class="restaurant-card ${r.status}" data-id="${r.id}" data-status="${r.status}" onclick="focusLog('${r.id}')"><div class="card-top"><div class="card-name">${r.name}</div><div class="card-stars">${stars}</div></div><div class="card-meta">${r.city||''}${r.cuisine?' \u00b7 '+r.cuisine:''}</div>${r.notes?`<div class="card-note">"${r.notes}"</div>`:''}</div>`;}
 function focusLog(id){const r=myLogs.find(x=>x.id===id);if(!r||!r.lat)return;map.panTo({lat:r.lat,lng:r.lng});map.setZoom(16);showView('map');setTimeout(()=>{const idx=myLogs.findIndex(x=>x.id===id);if(myLogMarkers[idx])google.maps.event.trigger(myLogMarkers[idx],'click');},400);}
 function searchCards(v){const q=v.toLowerCase();document.querySelectorAll('.restaurant-card').forEach(c=>{c.style.display=c.querySelector('.card-name').textContent.toLowerCase().includes(q)?'':'none';});}
-function filterCards(chip,type){inSuggestMode=false;document.querySelectorAll('.sidebar-header .filter-chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');if(!document.querySelector('.restaurant-card[data-id]')){renderSidebar();setTimeout(()=>applyFilter(type),50);}else{applyFilter(type);}}
+function filterCards(chip,type){inSuggestionsMode=false;document.querySelectorAll('.sidebar-header .filter-chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');if(!document.querySelector('.restaurant-card[data-id]')){renderSidebar();setTimeout(()=>applyFilter(type),50);}else{applyFilter(type);}}
 function applyFilter(type){document.querySelectorAll('.restaurant-card').forEach(c=>{c.style.display=(type==='all'||c.dataset.status===type)?'':'none';});}
 
 function renderJournal(){const visited=myLogs.filter(r=>r.status!=='wishlist');document.getElementById('journal-subtitle').textContent=`${visited.length} restaurant${visited.length!==1?'s':''} across ${uniqueCities()} cit${uniqueCities()===1?'y':'ies'}`;if(!visited.length){document.getElementById('journal-entries').innerHTML='<div class="empty-state"><div class="empty-icon">\ud83d\udcd3</div><p>Your journal is empty.<br>Visit restaurants and log them!</p></div>';return;}document.getElementById('journal-entries').innerHTML=visited.map(r=>{const stars=r.rating?'\u2605'.repeat(r.rating)+'\u2606'.repeat(5-r.rating):'';const photos=r.photos&&r.photos.length?`<div class="photo-strip">${r.photos.map(p=>`<img src="${p}" onclick="openLightbox('${p}')">`).join('')}</div>`:'';return `<div class="journal-card" data-journal-status="${r.status}"><div class="journal-icon ${r.status}">${statusEmoji[r.status]}</div><div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;"><div><div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;">${r.name}</div><div style="font-size:11px;color:#bbb;margin-top:2px;">\ud83d\udccd ${r.city||''}${r.cuisine?' \u00b7 \ud83c\udf7d '+r.cuisine:''}${r.date?' \u00b7 \ud83d\udcc5 '+fmtDate(r.date):''}</div></div><div style="text-align:right;flex-shrink:0;">${stars?`<div style="color:var(--gold);font-size:13px;">${stars}</div>`:''}<div style="font-size:10px;font-weight:700;color:${statusColorV[r.status]};margin-top:2px;letter-spacing:0.5px;">${statusLabel[r.status]}</div></div></div>${r.notes?`<div style="margin-top:9px;font-size:12px;color:#666;line-height:1.6;font-style:italic;border-left:2px solid var(--blush);padding-left:9px;">"${r.notes}"</div>`:''}${photos}</div></div>`;}).join('');}
 function filterJournal(chip,type){document.querySelectorAll('#view-journal .filter-chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');document.querySelectorAll('[data-journal-status]').forEach(c=>{c.style.display=(type==='all'||c.dataset.journalStatus===type)?'':'none';});}
 
-function updateStats(){const visited=myLogs.filter(r=>r.status!=='wishlist');const wl=myLogs.filter(r=>r.status==='wishlist').length;const rated=visited.filter(r=>r.rating>0);const avg=rated.length?(rated.reduce((a,b)=>a+b.rating,0)/rated.length).toFixed(1):'\u2014';['stat-visited','s-visited'].forEach(id=>document.getElementById(id).textContent=visited.length);['stat-wishlist','s-wishlist'].forEach(id=>document.getElementById(id).textContent=wl);['stat-cities','s-cities'].forEach(id=>document.getElementById(id).textContent=uniqueCities());document.getElementById('s-avg').textContent=avg;document.getElementById('s-wishlist-text').textContent=`${wl} restaurant${wl!==1?'s':''} waiting to be discovered`;const total=myLogs.length||1;['loved','liked','meh','wishlist'].forEach(s=>{const n=myLogs.filter(r=>r.status===s).length;const pct=Math.round(n/total*100);document.getElementById('bar-'+s).style.width=pct+'%';document.getElementById('count-'+s).textContent=n;document.getElementById('pct-'+s).textContent=n>0?pct+'%':'';});const cuisines={};visited.forEach(r=>{if(r.cuisine)cuisines[r.cuisine]=(cuisines[r.cuisine]||0)+1;});const sorted=Object.entries(cuisines).sort((a,b)=>b[1]-a[1]).slice(0,8);const vTotal=visited.length||1;document.getElementById('cuisine-bars').innerHTML=sorted.length?sorted.map(([c,n])=>`<div class="cuisine-tag" onclick="filterJournalByCuisine('${c.replace(/'/g,"\\'")}')">${c}<span class="cuisine-count">${Math.round(n/vTotal*100)}%</span></div>`).join(''):'<div style="color:#ccc;font-size:12px;padding:6px 0">Log restaurants to see your top cuisines</div>';}
+function updateStats(){
+  const visited=myLogs.filter(r=>r.status!=='wishlist');
+  const wl=myLogs.filter(r=>r.status==='wishlist').length;
+  const rated=visited.filter(r=>r.rating>0);
+  const avg=rated.length?(rated.reduce((a,b)=>a+b.rating,0)/rated.length).toFixed(1):null;
+
+  document.getElementById('stat-visited').textContent=visited.length;
+  document.getElementById('s-visited').textContent=visited.length;
+  document.getElementById('stat-wishlist').textContent=wl;
+  document.getElementById('s-wishlist').textContent=wl;
+  document.getElementById('s-wishlist-num').textContent=wl;
+  document.getElementById('stat-cities').textContent=uniqueCities();
+  document.getElementById('s-cities').textContent=uniqueCities();
+  document.getElementById('s-wishlist-text').textContent=`${wl} restaurant${wl!==1?'s':''} waiting to be discovered`;
+
+  // Avg rating inline next to "Ratings" title
+  const avgEl=document.getElementById('avg-rating-inline');
+  if(avgEl)avgEl.textContent=avg?`avg \u2605 ${avg}`:'';
+
+  const total=myLogs.length||1;
+  ['loved','liked','meh','wishlist'].forEach(s=>{
+    const n=myLogs.filter(r=>r.status===s).length;
+    const pct=Math.round(n/total*100);
+    document.getElementById('bar-'+s).style.width=pct+'%';
+    document.getElementById('count-'+s).textContent=n;
+    document.getElementById('pct-'+s).textContent=n>0?pct+'%':'';
+  });
+
+  // Cuisines
+  const cuisines={};
+  visited.forEach(r=>{if(r.cuisine)cuisines[r.cuisine]=(cuisines[r.cuisine]||0)+1;});
+  const sortedC=Object.entries(cuisines).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const vTotal=visited.length||1;
+  document.getElementById('cuisine-bars').innerHTML=sortedC.length
+    ?sortedC.map(([c,n])=>`<div class="cuisine-tag" onclick="filterJournalByCuisine('${c.replace(/'/g,"\\'")}')">${c}<span class="cuisine-count">${Math.round(n/vTotal*100)}%</span></div>`).join('')
+    :'<div style="color:#ccc;font-size:12px;padding:6px 0">Log restaurants to see your top cuisines</div>';
+
+  // Cities — clickable with percentages
+  const cities={};
+  visited.forEach(r=>{if(r.city)cities[r.city]=(cities[r.city]||0)+1;});
+  const sortedCities=Object.entries(cities).sort((a,b)=>b[1]-a[1]);
+  const citiesEl=document.getElementById('cities-grid');
+  if(citiesEl){citiesEl.innerHTML=sortedCities.length
+    ?sortedCities.map(([city,n])=>`<div class="cuisine-tag" onclick="filterJournalByCity('${city.replace(/'/g,"\\'")}')">${city}<span class="cuisine-count">${Math.round(n/vTotal*100)}%</span></div>`).join('')
+    :'<div style="color:#ccc;font-size:12px;padding:6px 0">No cities yet</div>';}
+}
 function filterJournalFromStats(status){showView('journal');setTimeout(()=>{const chip=document.querySelector(`#view-journal .filter-chip[onclick*="${status}"]`);if(chip)filterJournal(chip,status);},50);}
 function filterJournalByCuisine(cuisine){showView('journal');setTimeout(()=>{document.querySelectorAll('#view-journal .filter-chip').forEach(c=>c.classList.remove('active'));document.querySelectorAll('#view-journal .filter-chip')[0]?.classList.add('active');document.querySelectorAll('[data-journal-status]').forEach(c=>{const meta=c.querySelector('[style*="11px"]')?.textContent||'';c.style.display=meta.includes(cuisine)?'':'none';});},50);}
+function filterJournalByCity(city){showView('journal');setTimeout(()=>{document.querySelectorAll('#view-journal .filter-chip').forEach(c=>c.classList.remove('active'));document.querySelectorAll('#view-journal .filter-chip')[0]?.classList.add('active');document.querySelectorAll('[data-journal-status]').forEach(c=>{const meta=c.querySelector('[style*="11px"]')?.textContent||'';c.style.display=meta.includes(city)?'':'none';});},50);}
 
 function uniqueCities(){return new Set(myLogs.filter(r=>r.status!=='wishlist'&&r.city).map(r=>r.city)).size;}
 function fmtDate(d){if(!d)return'';try{const[y,m,day]=d.split('-');return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' '+parseInt(day)+', '+y;}catch{return d;}}
